@@ -26,6 +26,7 @@ CountVis = function(_parentElement, _data, _metaData, _eventHandler){
     this.eventHandler = _eventHandler;
     this.displayData = [];
     this.originalData = [];
+    this.currentWord = ["education", "President", "Faust"];
 
     // TODO: define all "constants" here
     this.margin = {top: 20, right: 20, bottom: 30, left: 0},
@@ -88,11 +89,17 @@ CountVis.prototype.initVis = function(){
       .orient("left")
       .ticks(6);
 
+
+    this.valueline = d3.svg.line()
+        .x(function(d, i) { return that.x(i + 1700); })
+        .y(function(d) {return that.y(d.count); });
+
+/*
     this.area = d3.svg.area()
       .interpolate("monotone")
-      .x(function(d) { return that.x(d.time); })
+      .x(function(d, i) {return that.x(i + 1700); })
       .y0(this.height)
-      .y1(function(d) { return that.y(d.count); });
+      .y1(function(d) {return that.y(d.count); });*/
     
     this.brush = d3.svg.brush()
       .on("brush", function(d) {
@@ -136,7 +143,9 @@ CountVis.prototype.wrangleData= function(){
 
     // displayData should hold the data which is visualized
     // pretty simple in this case -- no modifications needed
-    this.displayData = this.data;
+    var that = this;
+    this.displayData = this.data.filter(function(d){ return that.currentWord.indexOf(d.word) != -1});
+    console.log(this.displayData)
     this.originalData = this.data;
 }
 
@@ -150,9 +159,22 @@ CountVis.prototype.updateVis = function(){
 
     var that = this;
     // TODO: implement update graphs (D3: update, enter, exit)
-    this.x.domain(d3.extent(this.displayData, function(d) { return d.time; }));
-    this.xbrush.domain(d3.extent(this.displayData, function(d) { return d.time; }));
-    this.y.domain(d3.extent(this.displayData, function(d) { return d.count; }));
+
+    this.x.domain([1770, 2015]);
+    this.xbrush.domain([1770, 2015]);
+
+    //var max = [];
+    var allcounts = d3.range(0, this.displayData.length).map(function(){return [];});
+    this.displayData.forEach(
+            function(d, j){ 
+                d.inform.forEach(function(dd, i) {
+
+                    allcounts[j][i] = dd.count;
+                })
+            })
+
+    this.y.domain([0, d3.max(allcounts.map(function(d){return d3.max(d)}))])
+                
 
     // updates axis
     this.svg.select(".x.axis")
@@ -166,16 +188,19 @@ CountVis.prototype.updateVis = function(){
         });
 
     // updates graph
-    var path = this.svg.selectAll(".area")
-      .data([this.displayData])
 
+    var path = this.svg.selectAll(".line")
+      //.data(this.displayData[0].inform)
+      .data(this.displayData.map(function(d) {return d.inform}))
+    console.log(path)
+    
     path.enter()
       .append("path")
-      .attr("class", "area")
+      .attr("class", "line")
       .attr("transform", "translate(100,0)");
 
     path.transition(3000)
-      .attr("d", this.area);
+      .attr("d", this.valueline);
 
     path.exit()
       .remove();

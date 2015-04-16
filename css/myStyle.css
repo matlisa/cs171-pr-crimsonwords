@@ -72,3 +72,7 @@ body{
   top: 100%;
   left: 0;
 }
+.line {
+  fill: none;
+  stroke: darkgrey;
+}
