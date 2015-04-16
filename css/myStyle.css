@@ -74,5 +74,9 @@ body{
 }
 .line {
   fill: none;
+  stroke: darkgrey;
+
+}
+.line:hover {
   stroke: red;
 }

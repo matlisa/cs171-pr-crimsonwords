@@ -21,7 +21,7 @@
     <script src = "js/relatevis.js"></script>
 
     <!-- add own stylesheet-->
-    <link rel="stylesheet" type="text/css" href="css/myStyle.css?ver=1">
+    <link rel="stylesheet" type="text/css" href="css/myStyle.css?ver=2">
 
 </head>
 <body>
@@ -229,7 +229,7 @@
         return parseInt(style.getPropertyValue('width'));
     }
     var filterdates = function(data, from, to) {
-        
+        console.log(data)
         var filtered = [];
         var newdata = [];
         data.forEach(function(d, j){
@@ -237,6 +237,7 @@
                 return ((i+1700) >= from && (i+1700) <= to); })
             newdata[j] = {"word": d.word, "inform": filtered[j]}
         });
+
         return newdata;
 
     }

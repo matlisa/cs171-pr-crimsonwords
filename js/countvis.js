@@ -31,7 +31,7 @@ CountVis = function(_parentElement, _data, _metaData, _eventHandler){
     // TODO: define all "constants" here
     this.margin = {top: 10, right: 10, bottom: 100, left: 40};
     this.margin2 = {top: 430, right: 10, bottom: 20, left: 40};
-    this.width = 960 - this.margin.left - this.margin.right;
+    this.width = getInnerWidth(this.parentElement) - this.margin.left - this.margin.right;
     this.height = 500 - this.margin.top - this.margin.bottom;
     this.height2 = 500 - this.margin2.top - this.margin2.bottom;
 
@@ -131,14 +131,7 @@ CountVis.prototype.initVis = function(){
       .y0(this.height)
       .y1(function(d) {return that.y(d.count); });*/
     
-    this.brush = d3.svg.brush()
-      .x(this.x2)
-      .on("brush", function(d) {
-        //$(that.eventHandler).trigger("selectionChanged", that.brush.extent());
-        that.brushed(that.displayData, that.brush.extent());})
 
-
-    
         // Add axes visual elements
     this.focus.append("g")
         .attr("class", "x axis")
@@ -167,6 +160,16 @@ CountVis.prototype.initVis = function(){
     // filter, aggregate, modify data
     this.wrangleData();
 
+    this.brush = d3.svg.brush()
+      .x(this.x2)
+      .on("brush", function(d) {
+
+        //$(that.eventHandler).trigger("selectionChanged", that.brush.extent());
+        that.brushed(that.displayData, that.brush.extent());})
+
+
+    
+    
     // call the update method
     this.updateVis(that.displayData);
 }
@@ -182,7 +185,7 @@ CountVis.prototype.wrangleData= function(){
     // pretty simple in this case -- no modifications needed
     var that = this;
     this.displayData = this.data.filter(function(d){ return that.currentWord.indexOf(d.word) != -1});
-    console.log(this.displayData)
+
     this.originalData = this.data;
 }
 
@@ -192,14 +195,23 @@ CountVis.prototype.wrangleData= function(){
  * the drawing function - should use the D3 selection, enter, exit
  * @param _options -- only needed if different kinds of updates are needed
  */
-CountVis.prototype.updateVis = function(){
-
+CountVis.prototype.updateVis = function(newdata, extent){
+    if (newdata) {
+        this.displayData = newdata;
+    }
     var that = this;
     // TODO: implement update graphs (D3: update, enter, exit)
+    if (extent) {
+        console.log("hi", extent)
+        this.valueline.x(function(d, i) { return that.x(i + extent[0]); })
+        this.x.domain(extent);
+    }
+    else {
+        this.x.domain([1700, 2015]);
+    }
 
-    this.x.domain([1770, 2015]);
-    this.x2.domain([1770, 2015]);
-    this.xbrush.domain([1770, 2015]);
+    this.x2.domain([1700, 2015]);
+    this.xbrush.domain([1700, 2015]);
 
     //var max = [];
     var allcounts = d3.range(0, this.displayData.length).map(function(){return [];});
@@ -211,8 +223,17 @@ CountVis.prototype.updateVis = function(){
                 })
             })
 
+    var allcounts2 = d3.range(0, this.originalData.length).map(function(){return [];});
+    this.originalData.forEach(
+            function(d, j){ 
+                d.inform.forEach(function(dd, i) {
+
+                    allcounts2[j][i] = dd.count;
+                })
+            })
+
     this.y.domain([0, d3.max(allcounts.map(function(d){return d3.max(d)}))])
-    this.y2.domain([0, d3.max(allcounts.map(function(d){return d3.max(d)}))])
+    this.y2.domain([0, d3.max(allcounts2.map(function(d){return d3.max(d)}))])
 
     // updates axis
     this.focus.select(".x.axis")
@@ -230,6 +251,7 @@ CountVis.prototype.updateVis = function(){
 
     // updates graph
 
+    
 
     var path = this.focus.selectAll(".line")
       .data(this.displayData.map(function(d) {return d.inform}))
@@ -244,7 +266,7 @@ CountVis.prototype.updateVis = function(){
 
     
     var path2 = this.context.selectAll(".line")
-      .data(this.displayData.map(function(d) {return d.inform}))
+      .data(this.originalData.map(function(d) {return d.inform}))
       
     path2.enter()
       .append("path")
@@ -263,6 +285,7 @@ CountVis.prototype.updateVis = function(){
     this.brush.x(this.xbrush)
     
     this.svg.select(".brush")
+        .on()
         .call(this.brush)
       .selectAll("rect")
         .attr("height", this.height2);
@@ -358,12 +381,16 @@ CountVis.prototype.addSlider = function(svg){
 
 CountVis.prototype.brushed = function(data, extent) {
     var dateFormatter = d3.time.format("%Y.%m.%d");
-
+    /*
     this.x.domain(this.brush.empty() ? this.x2.domain() : this.brush.extent());
-    this.focus.selectAll(".line").attr("d", this.valueline);
-    this.focus.select(".x.axis").call(this.xAxis);
 
-    var filtered_data = filterdates(data, d3.round(extent[0]), d3.round(extent[1]));
+    this.focus.selectAll(".line")
+        .attr("transform", "translate(100,0)")
+        .attr("d", this.valueline);
+    this.focus.select(".x.axis").call(this.xAxis);*/
+
+    var filtered_data = filterdates(this.originalData, d3.round(extent[0]), d3.round(extent[1]));
+    this.updateVis(filtered_data, extent);
     //var counts = aggregateCountsForRange(filtered_data);
     var div = document.getElementById('brushInfo');
     div.innerHTML = 
