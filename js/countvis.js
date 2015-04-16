@@ -29,9 +29,11 @@ CountVis = function(_parentElement, _data, _metaData, _eventHandler){
     this.currentWord = ["education", "President", "Faust"];
 
     // TODO: define all "constants" here
-    this.margin = {top: 20, right: 20, bottom: 30, left: 0},
-    this.width = getInnerWidth(this.parentElement) - this.margin.left - this.margin.right,
-    this.height = 400 - this.margin.top - this.margin.bottom;
+    this.margin = {top: 10, right: 10, bottom: 100, left: 40};
+    this.margin2 = {top: 430, right: 10, bottom: 20, left: 40};
+    this.width = 960 - this.margin.left - this.margin.right;
+    this.height = 500 - this.margin.top - this.margin.bottom;
+    this.height2 = 500 - this.margin2.top - this.margin2.bottom;
 
     this.initVis();
 }
@@ -57,8 +59,21 @@ CountVis.prototype.initVis = function(){
     this.svg = this.parentElement.append("svg")
         .attr("width", this.width + this.margin.left + this.margin.right)
         .attr("height", this.height + this.margin.top + this.margin.bottom)
-      .append("g")
+
+    /*this.svg.append("defs").append("clipPath")
+        .attr("id", "clip")
+      .append("rect")
+        .attr("width", this.width)
+        .attr("height", this.height);*/
+
+    this.focus = this.svg.append("g")
+        .attr("class", "focus")
         .attr("transform", "translate(" + this.margin.left + "," + this.margin.top + ")");
+
+    this.context = this.svg.append("g")
+        .attr("class", "context")
+        .attr("transform", "translate(" + this.margin2.left + "," + this.margin2.top + ")");
+
 
     this.svg.append("text")
         .attr("class", "title")
@@ -71,11 +86,17 @@ CountVis.prototype.initVis = function(){
     this.x = d3.scale.linear()
       .range([0, this.width-100]);
 
+    this.x2 = d3.scale.linear()
+      .range([0, this.width-100]);
+
     this.xbrush = d3.scale.linear()
       .range([100, this.width]);
 
-    this.y = d3.scale.pow()
+    this.y = d3.scale.linear()
       .range([this.height, 0])
+
+    this.y2 = d3.scale.linear()
+        .range([this.height2, 0]);
 
     this.deform = d3.scale.pow()
 
@@ -84,6 +105,10 @@ CountVis.prototype.initVis = function(){
       .orient("bottom")
       .tickFormat(d3.format(""))
       .ticks(7);
+
+    this.xAxis2 = d3.svg.axis()
+        .scale(this.x2)
+        .orient("bottom");
 
     this.yAxis = d3.svg.axis()
       .scale(this.y)
@@ -95,6 +120,10 @@ CountVis.prototype.initVis = function(){
         .x(function(d, i) { return that.x(i + 1700); })
         .y(function(d) {return that.y(d.count); });
 
+    this.valueline2 = d3.svg.line()
+        .x(function(d, i) { return that.x2(i + 1700); })
+        .y(function(d) {return that.y2(d.count); });
+
 /*
     this.area = d3.svg.area()
       .interpolate("monotone")
@@ -103,16 +132,19 @@ CountVis.prototype.initVis = function(){
       .y1(function(d) {return that.y(d.count); });*/
     
     this.brush = d3.svg.brush()
+      .x(this.x2)
       .on("brush", function(d) {
-        $(that.eventHandler).trigger("selectionChanged", that.brush.extent());
-        brushed(that.displayData, that.brush.extent());})
+        //$(that.eventHandler).trigger("selectionChanged", that.brush.extent());
+        that.brushed(that.displayData, that.brush.extent());})
 
-    // Add axes visual elements
-    this.svg.append("g")
+
+    
+        // Add axes visual elements
+    this.focus.append("g")
         .attr("class", "x axis")
         .attr("transform", "translate(100," + this.height + ")")
-
-    this.svg.append("g")
+    
+    this.focus.append("g")
         .attr("class", "y axis")
         .attr("transform", "translate(100,0)")
       .append("text")
@@ -122,8 +154,12 @@ CountVis.prototype.initVis = function(){
         .style("text-anchor", "end")
         .text("Number of articles, yearly")
 
-    this.svg.append("g")
-      .attr("class", "brush");
+    this.context.append("g")
+        .attr("class", "x axis")
+        .attr("transform", "translate(100," + this.height2 + ")")
+
+    this.context.append("g")
+        .attr("class", "brush");
 
     //TODO: implement the slider -- see example at http://bl.ocks.org/mbostock/6452972
     this.addSlider(this.svg)
@@ -162,6 +198,7 @@ CountVis.prototype.updateVis = function(){
     // TODO: implement update graphs (D3: update, enter, exit)
 
     this.x.domain([1770, 2015]);
+    this.x2.domain([1770, 2015]);
     this.xbrush.domain([1770, 2015]);
 
     //var max = [];
@@ -175,13 +212,16 @@ CountVis.prototype.updateVis = function(){
             })
 
     this.y.domain([0, d3.max(allcounts.map(function(d){return d3.max(d)}))])
-                
+    this.y2.domain([0, d3.max(allcounts.map(function(d){return d3.max(d)}))])
 
     // updates axis
-    this.svg.select(".x.axis")
+    this.focus.select(".x.axis")
         .call(this.xAxis);
 
-    this.svg.select(".y.axis")
+    this.context.select(".x.axis")
+        .call(this.xAxis2);
+
+    this.focus.select(".y.axis")
         .call(this.yAxis)
         .selectAll(".tick").each(function(data) {
             var tick = d3.select(this)
@@ -190,10 +230,9 @@ CountVis.prototype.updateVis = function(){
 
     // updates graph
 
-    var path = this.svg.selectAll(".line")
-      //.data(this.displayData[0].inform)
+
+    var path = this.focus.selectAll(".line")
       .data(this.displayData.map(function(d) {return d.inform}))
-    console.log(path)
     
     path.enter()
       .append("path")
@@ -203,7 +242,22 @@ CountVis.prototype.updateVis = function(){
     path.transition(3000)
       .attr("d", this.valueline);
 
+    
+    var path2 = this.context.selectAll(".line")
+      .data(this.displayData.map(function(d) {return d.inform}))
+      
+    path2.enter()
+      .append("path")
+      .attr("class", "line")
+      .attr("transform", "translate(100,0)");
+
+    path2.transition(3000)
+      .attr("d", this.valueline2);
+
     path.exit()
+      .remove();
+
+    path2.exit()
       .remove();
     
     this.brush.x(this.xbrush)
@@ -211,7 +265,7 @@ CountVis.prototype.updateVis = function(){
     this.svg.select(".brush")
         .call(this.brush)
       .selectAll("rect")
-        .attr("height", this.height);
+        .attr("height", this.height2);
 }
 
 /**
@@ -302,9 +356,13 @@ CountVis.prototype.addSlider = function(svg){
 
 }
 
-function brushed(data, extent) {
+CountVis.prototype.brushed = function(data, extent) {
     var dateFormatter = d3.time.format("%Y.%m.%d");
- 
+
+    this.x.domain(this.brush.empty() ? this.x2.domain() : this.brush.extent());
+    this.focus.selectAll(".line").attr("d", this.valueline);
+    this.focus.select(".x.axis").call(this.xAxis);
+
     var filtered_data = filterdates(data, d3.round(extent[0]), d3.round(extent[1]));
     //var counts = aggregateCountsForRange(filtered_data);
     var div = document.getElementById('brushInfo');
