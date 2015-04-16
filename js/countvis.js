@@ -65,13 +65,13 @@ CountVis.prototype.initVis = function(){
         .attr("x", (this.width / 2))             
         .attr("y", 0 - (this.margin.top/3))
         .style("color", "red")
-        .text("Votes over Time");
+        .text("Frequency of Words over Time");
 
     // creates axis and scales
-    this.x = d3.time.scale()
+    this.x = d3.scale.linear()
       .range([0, this.width-100]);
 
-    this.xbrush = d3.time.scale()
+    this.xbrush = d3.scale.linear()
       .range([100, this.width]);
 
     this.y = d3.scale.pow()
@@ -82,6 +82,7 @@ CountVis.prototype.initVis = function(){
     this.xAxis = d3.svg.axis()
       .scale(this.x)
       .orient("bottom")
+      .tickFormat(d3.format(""))
       .ticks(7);
 
     this.yAxis = d3.svg.axis()
@@ -104,7 +105,7 @@ CountVis.prototype.initVis = function(){
     this.brush = d3.svg.brush()
       .on("brush", function(d) {
         $(that.eventHandler).trigger("selectionChanged", that.brush.extent());
-        brushed(that.originalData, that.brush.extent());})
+        brushed(that.displayData, that.brush.extent());})
 
     // Add axes visual elements
     this.svg.append("g")
@@ -119,7 +120,7 @@ CountVis.prototype.initVis = function(){
         .attr("y", 6)
         .attr("dy", ".71em")
         .style("text-anchor", "end")
-        .text("Number of voters, daily")
+        .text("Number of articles, yearly")
 
     this.svg.append("g")
       .attr("class", "brush");
@@ -303,11 +304,11 @@ CountVis.prototype.addSlider = function(svg){
 
 function brushed(data, extent) {
     var dateFormatter = d3.time.format("%Y.%m.%d");
-    
-    var filtered_data = filterdates(data, extent[0], extent[1]);
-    var counts = aggregateCountsForRange(filtered_data);
+ 
+    var filtered_data = filterdates(data, d3.round(extent[0]), d3.round(extent[1]));
+    //var counts = aggregateCountsForRange(filtered_data);
     var div = document.getElementById('brushInfo');
     div.innerHTML = 
-    "Time Interval: " + dateFormatter(extent[0]) + " to " + 
-    dateFormatter(extent[1]) + ", Total Number of Voters: " + counts;
+    "Time Interval: " + d3.round(extent[0])+ " to " + 
+    d3.round(extent[1]) + ", First Word: " + filtered_data[0].word;
 }
