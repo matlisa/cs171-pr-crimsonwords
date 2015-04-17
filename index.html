@@ -50,10 +50,10 @@
   </script>
 
 <div class="ui-widget">
-    <form>
+    <form onsubmit="return false">
     <label for="tags">Tags: </label>
     <input id="tags" name = "input" type="text" />
-    <input id="submits" name="submit" type="button" value="Add" />
+    <input id="submits" name="submit" type="submit" value="Add" />
     </form>
 </div>
 
@@ -247,6 +247,7 @@
                             }
                             count_vis.updateVis(count_vis.displayData, count_vis.brush.extent());
                            
+                            // need to condense the following
                             if (!document.getElementById('word1').innerHTML) {
                                 var div = document.getElementById('word1');
                                 div.innerHTML = word;
@@ -283,9 +284,12 @@
                     
                     //metaData = _metaData;
                     initVis();
-                    d3.select("#submits").on("click", function() {
+                    /*d3.select("#submits").on("click", function() {
                         addgraph();
-                    })          
+                    })*/          
+                    $("form").submit(function (e) {
+                        addgraph();
+                    });
                     d3.selectAll(".word").on("click", function() {
                         deletegraph(this);
                     })
@@ -313,6 +317,9 @@
                           .style("color", null)
   
                     })
+                    
+
+
 
                 }
             }
@@ -354,6 +361,7 @@
         return newdata;
 
     }
+
 
 
 

@@ -285,7 +285,6 @@ CountVis.prototype.updateVis = function(newdata, extent){
         d3.selectAll(".word")
           .style("opacity", 0.35)
           .filter(function(p) { 
-            console.log(this)
             return this.innerHTML == selected;
           })
           .style("opacity", 1)
@@ -294,7 +293,6 @@ CountVis.prototype.updateVis = function(newdata, extent){
         d3.selectAll(".focus .line")
           .style("opacity", 0.35)
           .filter(function(p) { 
-            console.log(this)
             return this.id == selected;
           })
           .style("opacity", 1)
