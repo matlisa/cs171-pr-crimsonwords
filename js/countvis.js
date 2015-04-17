@@ -66,13 +66,6 @@ CountVis.prototype.initVis = function(){
         .attr("width", this.width)
         .attr("height", this.height);*/
 
-    this.tip = d3.tip()
-            .attr('class', 'd3-tip')
-            .offset([-10, 0])
-            .html(function(d,i) {
-                return "<div><strong>Deviation from Average:</strong> <span style='color:#6495ED'> " + d.word+ "</span></div>"
-            })
-    this.svg.call(this.tip)
 
     this.focus = this.svg.append("g")
         .attr("class", "focus")
@@ -176,7 +169,28 @@ CountVis.prototype.initVis = function(){
         //$(that.eventHandler).trigger("selectionChanged", that.brush.extent());
         that.brushed(that.displayData, that.brush.extent());})
 
-
+    this.vertical = d3.select(".focus")
+        .append("div")
+        .attr("class", "remove")
+        .style("position", "absolute")
+        .style("z-index", "19")
+        .style("width", "1px")
+        .style("height", that.height)
+        .style("top", "10px")
+        .style("bottom", "30px")
+        .style("left", "0px")
+        .style("background", "#000");
+    
+    d3.select(".focus")
+      .on("mousemove", function(){ 
+        console.log(this) 
+         mousex = d3.mouse(this);
+         mousex = mousex[0] + 5;
+         that.vertical.style("left", mousex + "px" )})
+      .on("mouseover", function(){  
+         mousex = d3.mouse(this);
+         mousex = mousex[0] + 5;
+         that.vertical.style("left", mousex + "px")});
     
     
     // call the update method
@@ -262,7 +276,7 @@ CountVis.prototype.updateVis = function(newdata, extent){
     // updates graph
 
     
-console.log(this.displayData)
+
     var path = this.focus.selectAll(".line")
       .data(this.displayData.map(function(d) {return d.inform}))
     
@@ -274,8 +288,6 @@ console.log(this.displayData)
 
     path.transition(3000)
       .attr("d", this.valueline)
-      // .on("mouseover", function(d,i){that.tip.show(d,i)})
-      // .on("mouseout", function(d,i){that.tip.hide(d,i)});;
 
     
     var path2 = this.context.selectAll(".line")
@@ -295,7 +307,6 @@ console.log(this.displayData)
         d3.selectAll(".word")
           .style("opacity", 0.35)
           .filter(function(p) { 
-            console.log(this)
             return this.innerHTML == selected;
           })
           .style("opacity", 1)
@@ -304,7 +315,6 @@ console.log(this.displayData)
         d3.selectAll(".focus .line")
           .style("opacity", 0.35)
           .filter(function(p) { 
-            console.log(this)
             return this.id == selected;
           })
           .style("opacity", 1)
@@ -334,6 +344,9 @@ console.log(this.displayData)
         .call(this.brush)
       .selectAll("rect")
         .attr("height", this.height2);
+
+
+
 }
 
 /**
