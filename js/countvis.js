@@ -26,7 +26,7 @@ CountVis = function(_parentElement, _data, _metaData, _eventHandler){
     this.eventHandler = _eventHandler;
     this.displayData = [];
     this.originalData = [];
-    this.currentWord = ["education", "President", "Faust"];
+    this.currentWord = [];
 
     // TODO: define all "constants" here
     this.margin = {top: 10, right: 10, bottom: 100, left: 40};
@@ -155,6 +155,7 @@ CountVis.prototype.initVis = function(){
         .style("text-anchor", "end")
         .text("Number of articles, yearly")
 
+
     this.context.append("g")
         .attr("class", "x axis")
         .attr("transform", "translate(100," + this.height2 + ")")
@@ -179,7 +180,7 @@ CountVis.prototype.initVis = function(){
     
     
     // call the update method
-    this.updateVis(that.displayData);
+    this.updateVis(this.displayData);
 }
 
 
@@ -194,7 +195,8 @@ CountVis.prototype.wrangleData= function(){
     var that = this;
     this.displayData = this.data.filter(function(d){ return that.currentWord.indexOf(d.word) != -1});
 
-    this.originalData = this.data;
+    this.originalData = this.displayData;
+
 }
 
 
@@ -204,13 +206,13 @@ CountVis.prototype.wrangleData= function(){
  * @param _options -- only needed if different kinds of updates are needed
  */
 CountVis.prototype.updateVis = function(newdata, extent){
+
     if (newdata) {
         this.displayData = newdata;
     }
     var that = this;
     // TODO: implement update graphs (D3: update, enter, exit)
-    if (extent) {
-        console.log("hi", extent)
+    if (extent && extent[0] != extent[1]) {
         this.valueline.x(function(d, i) { return that.x(i + extent[0]); })
         this.x.domain(extent);
     }
@@ -267,6 +269,7 @@ console.log(this.displayData)
     path.enter()
       .append("path")
       .attr("class", "line")
+      .attr("id", function(d, i) { return that.currentWord[i];})
       .attr("transform", "translate(100,0)");
 
     path.transition(3000)
@@ -286,6 +289,39 @@ console.log(this.displayData)
     path2.transition(3000)
       .attr("d", this.valueline2);
 
+    this.focus.selectAll(".line")
+        .on("mouseover", function(d,i) {
+        var selected = this.id;
+        d3.selectAll(".word")
+          .style("opacity", 0.35)
+          .filter(function(p) { 
+            console.log(this)
+            return this.innerHTML == selected;
+          })
+          .style("opacity", 1)
+          .style("color", "red");
+
+        d3.selectAll(".focus .line")
+          .style("opacity", 0.35)
+          .filter(function(p) { 
+            console.log(this)
+            return this.id == selected;
+          })
+          .style("opacity", 1)
+          .style("stroke", "red")
+          .style("stroke-width", 1.5);
+
+      })
+      .on("mouseout", function(d,i) {
+        d3.selectAll(".word")
+          .style("opacity", 1)
+          .style("color", null)
+        d3.selectAll(".focus .line")
+          .style("opacity", 1)
+          .style("stroke", null)
+          .style("stroke-width", null);
+      });
+
     path.exit()
       .remove();
 
@@ -295,7 +331,6 @@ console.log(this.displayData)
     this.brush.x(this.xbrush)
     
     this.svg.select(".brush")
-        .on()
         .call(this.brush)
       .selectAll("rect")
         .attr("height", this.height2);
@@ -405,5 +440,7 @@ CountVis.prototype.brushed = function(data, extent) {
     var div = document.getElementById('brushInfo');
     div.innerHTML = 
     "Time Interval: " + d3.round(extent[0])+ " to " + 
-    d3.round(extent[1]) + ", First Word: " + filtered_data[0].word;
+    d3.round(extent[1]);
+
+
 }

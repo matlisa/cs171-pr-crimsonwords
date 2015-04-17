@@ -10,6 +10,14 @@
     <script src="libs/bootstrap/js/bootstrap.min.js" charset="utf-8"></script>
     <script src="http://d3js.org/queue.v1.min.js"></script>
 
+
+
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+    <script src="//code.jquery.com/jquery-1.10.2.js"></script>
+    <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+
+
+
     <!--Stylesheets-->
     <link rel="stylesheet" type="text/css" href="libs/bootstrap/css/bootstrap.min.css">
 
@@ -30,6 +38,28 @@
     <div class="container">
         <h1>Crimson Words</h1>
 
+<script>
+  $(function() {
+    var availableTags = [
+      "education",
+      "President",
+      "Faust",
+    ];
+    $( "#tags" ).autocomplete({
+      source: availableTags
+    });
+  });
+  </script>
+
+<div class="ui-widget">
+    <form>
+    <label for="tags">Tags: </label>
+    <input id="tags" name = "input" type="text" />
+    <input id="submits" name="submit" type="button" value="Add" />
+    </form>
+</div>
+
+
         <div class="row">
             <div class="col-md-8 col-sm-12">
                <p> Future Description </p>
@@ -40,6 +70,10 @@
         <div class="row">
             <div class="col-md-8">
                 <b>current brush:</b> <span id="brushInfo"></span>
+                <b>words:</b> 
+                <span class = "word" id="word1"></span>
+                <span class = "word" id="word2"></span>
+                <span class = "word" id="word3"></span>
             </div>
 
 
@@ -75,6 +109,7 @@
             var allData = [];
             var metaData = {};
 
+            var count_vis;
             // this function can convert Date objects to a string
             // it can also convert strings to Date objects
             // see: https://github.com/mbostock/d3/wiki/Time-Formatting
@@ -115,7 +150,7 @@
 
 
                 //TODO: Instantiate all Vis Objects here
-                var count_vis = new CountVis(d3.select("#countVis"), allData, metaData, MyEventHandler);
+                count_vis = new CountVis(d3.select("#countVis"), allData, metaData, MyEventHandler);
                 // var age_vis = new AgeVis(d3.select("#ageVis"), allData, MyEventHandler);
                 // var prio_vis = new PrioVis(d3.select("#prioVis"), allData, metaData, MyEventHandler)
 
@@ -150,8 +185,9 @@
 
                     /*allData = [{"word": "education", "count":_allData.education}, {"word": "Faust", "count":_allData.Faust}, {"word": "President", "count":_allData.President}]*/
 
-                    allData = _allData.map(function (d) { 
-                                var res=d3.range(0,315).map(function(d,i) {
+                    allData = _allData.map(function(d) { 
+                                var res=d3.range(0,315).map(function(e,i) {
+                                    
                                     return {count:0, link:"" };});
                                 d.count.map(function(dd, i) {
                                     res[parseInt(dd.web_publish_date.substring(0, 4))-1700].count += 1;
@@ -200,9 +236,86 @@
 
                                 return key;
                     })
+
+                    var addgraph = function() {
+                        var word = document.getElementById('tags').value;
+                        if (count_vis.currentWord.indexOf(word) == -1) {
+                            count_vis.currentWord.push(word);
+
+                            count_vis.wrangleData();
+                            var extent = count_vis.brush.extent();
+                            if (extent[0] != extent[1]) {
+                            count_vis.displayData = filterdates(count_vis.displayData, d3.round(extent[0]), d3.round(extent[1]));
+                            }
+                            count_vis.updateVis(count_vis.displayData, count_vis.brush.extent());
+                           
+                            if (!document.getElementById('word1').innerHTML) {
+                                var div = document.getElementById('word1');
+                                div.innerHTML = word;
+                            }
+                            else if (!document.getElementById('word2').innerHTML) {
+                                var div = document.getElementById('word2');
+                                div.innerHTML = word;
+                            }
+                            else if (!document.getElementById('word3').innerHTML) {
+                                var div = document.getElementById('word3');
+                                div.innerHTML = word;
+                            }
+                        
+                        }
+                        document.getElementById('tags').value = "";
+                    }
+
+                    var deletegraph = function(object) {
+                        var index = count_vis.currentWord.indexOf(object.innerHTML);
+                        if (index > -1) {
+                            count_vis.currentWord.splice(index, 1);
+                        }
+
+                        count_vis.wrangleData();
+                        var extent = count_vis.brush.extent();
+                        if (extent[0] != extent[1]) {
+                        count_vis.displayData = filterdates(count_vis.displayData, d3.round(extent[0]), d3.round(extent[1]));
+                        }
+                        count_vis.updateVis(count_vis.displayData, count_vis.brush.extent());
+                       
+                        object.innerHTML = "";
+
+                    }
                     
                     //metaData = _metaData;
                     initVis();
+                    d3.select("#submits").on("click", function() {
+                        addgraph();
+                    })          
+                    d3.selectAll(".word").on("click", function() {
+                        deletegraph(this);
+                    })
+                    d3.selectAll(".word").on("mouseover", function(p) {
+                        var selected = this.innerHTML;
+
+                        d3.selectAll(".focus .line")
+                          .style("opacity", 0.35)
+                          .filter(function(d) { 
+                             return this.id==selected;
+                          })
+                          .style("opacity", 1)
+                          .style("stroke", "red")
+                          .style("stroke-width", 1.5);
+                        d3.select(this)
+                          .style("color", "red")
+                     
+                    })
+                    d3.selectAll('.word').on("mouseout", function() {
+                        d3.selectAll(".line")
+                          .style("opacity", 1)
+                          .style("stroke", null)
+                          .style("stroke-width", null);
+                        d3.select(this)
+                          .style("color", null)
+  
+                    })
+
                 }
             }
 
@@ -231,18 +344,21 @@
         return parseInt(style.getPropertyValue('width'));
     }
     var filterdates = function(data, from, to) {
-        console.log(data)
         var filtered = [];
         var newdata = [];
         data.forEach(function(d, j){
             filtered[j] = d.inform.filter(function(dd, i) {
                 return ((i+1700) >= from && (i+1700) <= to); })
+            
             newdata[j] = {"word": d.word, "inform": filtered[j]}
         });
 
         return newdata;
 
     }
+
+
+
     </script>
 </body>
 </html>
