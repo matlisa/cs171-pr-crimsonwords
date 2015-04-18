@@ -24,14 +24,14 @@
     <!-- Get some nice font-->
     <link href='http://fonts.googleapis.com/css?family=PT+Sans:400,700' rel='stylesheet' type='text/css'>
 
-    <script src = "js/countvis.js?ver=2"></script>
+    <script src = "js/countvis.js?ver=1"></script>
     <script src = "js/topvis.js"></script>
     <script src = "js/relatevis.js"></script>
 
 
 
     <!-- add own stylesheet-->
-    <link rel="stylesheet" type="text/css" href="css/myStyle.css?ver=2">
+    <link rel="stylesheet" type="text/css" href="css/myStyle.css?ver=1">
 
 </head>
 <body>
@@ -301,6 +301,7 @@
                         d3.selectAll(".focus .line")
                           .style("opacity", 0.35)
                           .filter(function(d) { 
+
                              return this.id==selected;
                           })
                           .style("opacity", 1)
@@ -319,7 +320,8 @@
                           .style("color", null)
   
                     })
-                    
+
+
 
 
 
@@ -345,6 +347,7 @@
 
             startHere();
         })
+    
     var getInnerWidth = function(element) {
         var style = window.getComputedStyle(element.node(), null);
 
@@ -363,8 +366,57 @@
         return newdata;
 
     }
+    var mousemove = function(object, countvis) {      
+                       // **********
+                       
+        if (object) {
+            
+            var x0 = d3.round(countvis.x.invert(d3.mouse(object)[0]))
+//console.log(countvis.originalData, countvis.selectword)
+
+            var found = countvis.originalData.filter(function(d, i) {
+                
+                return d.word == countvis.selectword;
+                /*found = d.word.filter(function(dd, i) {
+                    console.log(dd)
+                return true; })*/
+            
+            
+
+            })
+            //console.log(found[0])
+            if (found[0]) {
+                var y0 = found[0].inform[x0-1700].count
+            }
+            else {
+                var y0 = countvis.originalData[0].inform[x0-1700].count
+            }
+
+            countvis.back.select("circle.y")                           // **********
+                .attr("transform",                             // **********
+                      "translate(" + (countvis.x(x0)) +"," +         // **********
+                                     countvis.y(y0) + ")");
+            countvis.back.select(".tool")
+                .attr("transform",
+                        "translate(" + (countvis.x(x0)) +"," +         // **********
+                                     "0)");
+            countvis.back.select("text.y3")
+                .attr("transform",                             // **********
+                      "translate(" + (countvis.x(x0)) +"," +         // **********
+                                     countvis.y(y0) + ")")
+      .text(y0);
+
+  countvis.back.select("text.y4")
+                .attr("transform",                             // **********
+                      "translate(" + (countvis.x(x0)) +"," +         // **********
+                                     countvis.y(y0) + ")")
+      .text(y0);
+        }       // **********
 
 
+    }   
+
+       
 
 
     </script>

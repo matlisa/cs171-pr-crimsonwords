@@ -142,3 +142,8 @@ body{
 }
 /* Clear floats */
 .fclear {clear:both}
+
+
+.focus {
+  color: red;
+}

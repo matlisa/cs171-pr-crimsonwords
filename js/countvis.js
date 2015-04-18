@@ -27,6 +27,7 @@ CountVis = function(_parentElement, _data, _metaData, _eventHandler){
     this.displayData = [];
     this.originalData = [];
     this.currentWord = [];
+    this.selectword = "";
 
     // TODO: define all "constants" here
     this.margin = {top: 10, right: 10, bottom: 100, left: 40};
@@ -67,9 +68,45 @@ CountVis.prototype.initVis = function(){
         .attr("height", this.height);*/
 
 
+
     this.focus = this.svg.append("g")
         .attr("class", "focus")
-        .attr("transform", "translate(" + this.margin.left + "," + this.margin.top + ")");
+        .attr("transform", "translate(" + this.margin.left + "," + this.margin.top + ")")
+        
+    this.back = this.svg.append("g")
+        .style("display", "none")
+
+    this.back.append("circle")                                 // **********
+        .attr("class", "y")   
+        .attr("cx", 140)
+        .attr("cy", 10)                          // **********
+        .style("fill", "none")                             // **********
+        .style("stroke", "blue")                           // **********
+        .attr("r", 4)
+
+    this.back.append("line")
+        .attr("class", "tool")
+        .style("stroke", "blue")
+        .style("stroke-dasharray", "3,3")
+        .style("opacity", 0.5)
+        .attr("y1", 0)
+        .attr("y2", this.height)
+        .attr("x1", 140)
+        .attr("x2", 140);
+
+    this.back.append("text")
+        .attr("class", "y3")
+        .attr("x", 140)
+        .style("stroke", "white")
+        .style("stroke-width", "3.5px")
+        .style("opacity", 0.8)
+        .attr("dx", 8)
+        .attr("dy", "1em");
+    this.back.append("text")
+        .attr("class", "y4")
+        .attr("x", 140)
+        .attr("dx", 8)
+        .attr("dy", "1em");
 
     this.context = this.svg.append("g")
         .attr("class", "context")
@@ -131,12 +168,13 @@ CountVis.prototype.initVis = function(){
       .x(function(d, i) {return that.x(i + 1700); })
       .y0(this.height)
       .y1(function(d) {return that.y(d.count); });*/
-    
+
 
         // Add axes visual elements
     this.focus.append("g")
         .attr("class", "x axis")
         .attr("transform", "translate(100," + this.height + ")")
+
     
     this.focus.append("g")
         .attr("class", "y axis")
@@ -147,6 +185,14 @@ CountVis.prototype.initVis = function(){
         .attr("dy", ".71em")
         .style("text-anchor", "end")
         .text("Number of articles, yearly")
+
+    this.focus.append("rect")   
+        .attr("class", "background")                                  // **********
+        .attr("width", this.width)                              // **********
+        .attr("height", this.height)  
+        .attr("transform", "translate(100,0)")                          // **********
+        .style("fill", "none")                             // **********
+        .style("pointer-events", "all")                    // **********
 
 
     this.context.append("g")
@@ -169,29 +215,7 @@ CountVis.prototype.initVis = function(){
         //$(that.eventHandler).trigger("selectionChanged", that.brush.extent());
         that.brushed(that.displayData, that.brush.extent());})
 
-    this.vertical = d3.select(".focus")
-        .append("div")
-        .attr("class", "remove")
-        .style("position", "absolute")
-        .style("z-index", "19")
-        .style("width", "1px")
-        .style("height", that.height)
-        .style("top", "10px")
-        .style("bottom", "30px")
-        .style("left", "0px")
-        .style("background", "#000");
-    
-    d3.select(".focus")
-      .on("mousemove", function(){ 
-        console.log(this) 
-         mousex = d3.mouse(this);
-         mousex = mousex[0] + 5;
-         that.vertical.style("left", mousex + "px" )})
-      .on("mouseover", function(){  
-         mousex = d3.mouse(this);
-         mousex = mousex[0] + 5;
-         that.vertical.style("left", mousex + "px")});
-    
+
     
     // call the update method
     this.updateVis(this.displayData);
@@ -275,7 +299,7 @@ CountVis.prototype.updateVis = function(newdata, extent){
 
     // updates graph
 
-    
+
 
     var path = this.focus.selectAll(".line")
       .data(this.displayData.map(function(d) {return d.inform}))
@@ -288,7 +312,6 @@ CountVis.prototype.updateVis = function(newdata, extent){
 
     path.transition(3000)
       .attr("d", this.valueline)
-
     
     var path2 = this.context.selectAll(".line")
       .data(this.originalData.map(function(d) {return d.inform}))
@@ -304,9 +327,11 @@ CountVis.prototype.updateVis = function(newdata, extent){
     this.focus.selectAll(".line")
         .on("mouseover", function(d,i) {
         var selected = this.id;
+        that.selectword = this.id;
         d3.selectAll(".word")
           .style("opacity", 0.35)
           .filter(function(p) { 
+            
             return this.innerHTML == selected;
           })
           .style("opacity", 1)
@@ -330,7 +355,63 @@ CountVis.prototype.updateVis = function(newdata, extent){
           .style("opacity", 1)
           .style("stroke", null)
           .style("stroke-width", null);
+        //that.selectword = "";
       });
+
+    this.selectword = that.selectword;
+
+    d3.select(".background")
+        .on("mouseover", function() { that.back.style("display", null); })
+        .on("mouseout", function() { that.back.style("display", "none"); })
+        .on("mousemove", function() {
+            mousemove(this, that)
+        }); 
+    /*d3.select(".background")
+      .on("mousemove", function(){ 
+         mousex = d3.mouse(this);
+         mousex = mousex[0] + 5;
+         that.vertical.attr("x", mousex )})
+      .on("mouseover", function(){  
+         mousex = d3.mouse(this);
+         mousex = mousex[0] + 5;
+         that.vertical.attr("x", mousex )});*/
+    /*if (path[0].length) {
+
+    var circle = 
+        this.focus.append("circle")
+          .attr("cx", 100)
+          .attr("cy", 350)
+          .attr("r", 3)
+          .attr("fill", "red");
+
+    var pathEl = path.node();
+    var pathLength = pathEl.getTotalLength();
+    var BBox = pathEl.getBBox();
+    var scale = pathLength/BBox.width;
+    var offsetLeft = document.getElementById("word1").offsetLeft;
+
+
+    this.focus.on("mousemove", function() {
+      var x = d3.event.pageX - offsetLeft-140; 
+      console.log("hi", d3.event.pageX, offsetLeft)
+      var beginning = x, end = pathLength, target;
+      while (true) {
+        target = Math.floor((beginning + end) / 2);
+        pos = pathEl.getPointAtLength(target);
+        if ((target === end || target === beginning) && pos.x !== x) {
+            break;
+        }
+        if (pos.x > x)      end = target;
+        else if (pos.x < x) beginning = target;
+        else                break; //position found
+      }
+      console.log(x, pos)
+      circle
+        .attr("opacity", 1)
+        .attr("cx", x+100)
+        .attr("cy", pos.y);
+    });
+    }*/
 
     path.exit()
       .remove();
@@ -338,6 +419,10 @@ CountVis.prototype.updateVis = function(newdata, extent){
     path2.exit()
       .remove();
     
+
+
+
+
     this.brush.x(this.xbrush)
     
     this.svg.select(".brush")
@@ -457,3 +542,25 @@ CountVis.prototype.brushed = function(data, extent) {
 
 
 }
+
+/*CountVis.prototype.mousemove = function() {      
+                       // **********
+                       console.log(d3.mouse(this)[0])
+        var x0 = this.x.invert(d3.mouse(this)[0]),              // **********
+            i = bisectDate(data, x0, 1),                   // **********
+            d0 = data[i - 1],                              // **********
+            d1 = data[i],                                  // **********
+            d = x0 - d0.date > d1.date - x0 ? d1 : d0;     // **********
+        console.log("data", data)
+
+        this.back.select("circle.y")                           // **********
+            .attr("transform",                             // **********
+                  "translate(" + this.x(100) + "," +         // **********
+                                 this.y(200) + ")");        // **********
+        }   */
+
+
+
+
+
+
