@@ -212,7 +212,7 @@ CountVis.prototype.initVis = function(){
       .x(this.x2)
       .on("brush", function(d) {
 
-        //$(that.eventHandler).trigger("selectionChanged", that.brush.extent());
+        $(that.eventHandler).trigger("selectionChanged", that.brush.extent());
         that.brushed(that.displayData, that.brush.extent());})
 
 
@@ -531,6 +531,7 @@ CountVis.prototype.brushed = function(data, extent) {
         .attr("transform", "translate(100,0)")
         .attr("d", this.valueline);
     this.focus.select(".x.axis").call(this.xAxis);*/
+
 
     var filtered_data = filterdates(this.originalData, d3.round(extent[0]), d3.round(extent[1]));
     this.updateVis(filtered_data, extent);

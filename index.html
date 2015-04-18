@@ -27,6 +27,7 @@
     <script src = "js/countvis.js?ver=1"></script>
     <script src = "js/topvis.js"></script>
     <script src = "js/relatevis.js"></script>
+    <script src = "js/topwordsvis.js"></script>
 
 
 
@@ -88,7 +89,7 @@
         </div>
 
         <div class="row">
-            <div class="col-md-12" id="relateVis">
+            <div class="col-md-12" id="topWordsVis">
             </div>
 
         </div>
@@ -151,7 +152,7 @@
 
                 //TODO: Instantiate all Vis Objects here
                 count_vis = new CountVis(d3.select("#countVis"), allData, metaData, MyEventHandler);
-                // var age_vis = new AgeVis(d3.select("#ageVis"), allData, MyEventHandler);
+                var topwords_vis = new topWordsVis(d3.select("#topVis"), allData, metaData, MyEventHandler);
                 // var prio_vis = new PrioVis(d3.select("#prioVis"), allData, metaData, MyEventHandler)
 
                 // TODO: bind the eventHandler to the Vis Objects
@@ -163,7 +164,7 @@
                 //     age_vis.onSelectionChange(type[0], type[1]);d3.select("#brushInfo").selectAll("text").remove();d3.select("#brushInfo").append("text").attr("font-size", "6px").text(""+format1(type[0])+" to "+format1(type[1])+"")
                 // });
 
-                // $(MyEventHandler).bind("selectionChanged", function(event, data){prio_vis.onSelectionChange(data[0],data[1])})
+                $(MyEventHandler).bind("selectionChanged", function(event, data1, data2){topwords_vis.onSelectionChange(data1,data2)})
             }
 
             // call this function after both files are loaded -- error should be "null" if no error
