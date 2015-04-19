@@ -17,7 +17,7 @@ topWordsVis = function(_parentElement, _data, _metaData, _eventHandler){
     // TODO: define all constants here
     this.margin = {top: 50, right: 50, bottom: 100, left: 200},
     this.width = 230,
-    this.height = 1000 - this.margin.top - this.margin.bottom;
+    this.height = 600 - this.margin.top - this.margin.bottom;
 
     this.initVis();
 
@@ -34,14 +34,14 @@ topWordsVis.prototype.initVis = function(){
 
     //TODO: construct or select SVG
     this.timespan = (this.timespan||397)
-
+    this.color= d3.scale.category10()
     this.svg = this.parentElement.append("svg")
             .attr("width", this.width + this.margin.left + this.margin.right)
             .attr("height", this.height + this.margin.top + this.margin.bottom)
     this.svg.append("g")
         .append("text")
         .attr("class", "title")
-        .text("Deviation from Overall Avg. Priority Vote Rate")
+        .text("Top 10 Words of Selected Time Period")
         .attr("x",75)
         .attr("y", 30)
     this.svg=this.svg.append("g")
@@ -161,7 +161,7 @@ topWordsVis.prototype.updateVis = function(){
     this.rows.exit().remove()
 
     this.rows.selectAll("rect")
-      	.attr("fill", "blue")//function(d,i,j){return that.metaData["priorities"][j]["item-color"]}) 
+      	.attr("fill", function(d,i){return that.color(d)}) 
       	.attr("height" , this.y.rangeBand())
         .attr("width" , function (d) {return that.x(d.sum)})
         .attr("y", function(d,i){return that.y(d.word)})
@@ -239,9 +239,8 @@ topWordsVis.prototype.filterAndAggregate = function(_filter){
         })
 
     res.sort(function(a,b){if (a.sum > b.sum){ return -1} else if (a.sum < b.sum){ return 1} else {return 0}})
-    res.filter(function(d,i){return i<10})
-
-    return res;
+    
+    return res.filter(function(d,i){return i<10});
 
 }
 
