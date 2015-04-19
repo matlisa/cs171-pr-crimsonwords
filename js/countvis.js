@@ -307,11 +307,13 @@ CountVis.prototype.updateVis = function(newdata, extent){
     path.enter()
       .append("path")
       .attr("class", "line")
-      .attr("id", function(d, i) { return that.currentWord[i];})
       .attr("transform", "translate(100,0)");
 
-    path.transition(3000)
-      .attr("d", this.valueline)
+    path
+      .attr("id", function(d, i) { console.log(that.currentWord);
+        return that.currentWord[i];})
+      .transition(3000)
+        .attr("d", this.valueline)
     
     var path2 = this.context.selectAll(".line")
       .data(this.originalData.map(function(d) {return d.inform}))
@@ -327,6 +329,7 @@ CountVis.prototype.updateVis = function(newdata, extent){
     this.focus.selectAll(".line")
         .on("mouseover", function(d,i) {
         var selected = this.id;
+        
         that.selectword = this.id;
         d3.selectAll(".word")
           .style("opacity", 0.35)

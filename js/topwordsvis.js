@@ -233,7 +233,7 @@ topWordsVis.prototype.filterAndAggregate = function(_filter){
     // TODO: implement the function that filters the data and sums the values
 
 
-    console.log(this.data[0].inform.filter(filter))
+    //console.log(this.data[0].inform.filter(filter))
     this.data.map(function(d,i){
         res[i] = {word: d["word"], sum: d3.sum(d["inform"].filter(filter).map(function(dd){return dd.count}))}
         })

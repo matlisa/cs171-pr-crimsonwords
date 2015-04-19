@@ -24,33 +24,21 @@
     <!-- Get some nice font-->
     <link href='http://fonts.googleapis.com/css?family=PT+Sans:400,700' rel='stylesheet' type='text/css'>
 
-    <script src = "js/countvis.js?ver=1"></script>
+    <script src = "js/countvis.js?ver=2"></script>
     <script src = "js/topvis.js"></script>
-    <script src = "js/relatevis.js"></script>
-    <script src = "js/topwordsvis.js"></script>
+    <script src = "js/relatevis.js?ver=1"></script>
+    <script src = "js/topwordsvis.js?ver=1"></script>
 
 
 
     <!-- add own stylesheet-->
-    <link rel="stylesheet" type="text/css" href="css/myStyle.css?ver=1">
+    <link rel="stylesheet" type="text/css" href="css/myStyle.css?ver=2">
 
 </head>
 <body>
     <div class="container">
         <h1>Crimson Words</h1>
 
-<script>
-  $(function() {
-    var availableTags = [
-      "education",
-      "President",
-      "Faust",
-    ];
-    $( "#tags" ).autocomplete({
-      source: availableTags
-    });
-  });
-  </script>
 
 <div class="ui-widget">
     <form onsubmit="return false">
@@ -94,6 +82,12 @@
 
         </div>
 
+                <div class="row">
+            <div class="col-md-12" id="relateVis">
+            </div>
+
+        </div>
+
 
     </div>
 
@@ -111,6 +105,7 @@
             var metaData = {};
 
             var count_vis;
+            var prio_vis;
             // this function can convert Date objects to a string
             // it can also convert strings to Date objects
             // see: https://github.com/mbostock/d3/wiki/Time-Formatting
@@ -152,6 +147,8 @@
 
                 //TODO: Instantiate all Vis Objects here
                 count_vis = new CountVis(d3.select("#countVis"), allData, metaData, MyEventHandler);
+                prio_vis = new PrioVis(d3.select("#relateVis"), allData, metaData, MyEventHandler);
+
                 var topwords_vis = new topWordsVis(d3.select("#topVis"), allData, metaData, MyEventHandler);
                 // var prio_vis = new PrioVis(d3.select("#prioVis"), allData, metaData, MyEventHandler)
 
@@ -272,13 +269,16 @@
                         var index = count_vis.currentWord.indexOf(object.innerHTML);
                         if (index > -1) {
                             count_vis.currentWord.splice(index, 1);
+
                         }
+                        console.log("after delete", count_vis.currentWord)
 
                         count_vis.wrangleData();
                         var extent = count_vis.brush.extent();
                         if (extent[0] != extent[1]) {
-                        count_vis.displayData = filterdates(count_vis.displayData, d3.round(extent[0]), d3.round(extent[1]));
+                            count_vis.displayData = filterdates(count_vis.displayData, d3.round(extent[0]), d3.round(extent[1]));
                         }
+                        console.log("data", count_vis.displayData)
                         count_vis.updateVis(count_vis.displayData, count_vis.brush.extent());
                        
                         object.innerHTML = "";
@@ -290,6 +290,14 @@
                     /*d3.select("#submits").on("click", function() {
                         addgraph();
                     })*/          
+                    var allWords = allData.map(function(d) {
+                        return d.word;
+                    });
+
+                    $( "#tags" ).autocomplete({
+                      source: allWords
+                    });
+
                     $("form").submit(function (e) {
                         addgraph();
                     });
@@ -298,7 +306,7 @@
                     })
                     d3.selectAll(".word").on("mouseover", function(p) {
                         var selected = this.innerHTML;
-
+                        //countvis.selectword = selected;
                         d3.selectAll(".focus .line")
                           .style("opacity", 0.35)
                           .filter(function(d) { 
@@ -334,7 +342,7 @@
                 //TODO: load data here and call "dataLoaded" afterwards
                 // Hint: http://giscollective.org/d3-queue-js/
                 queue()
-                    .defer(d3.json, "data/sampledata.json")
+                    .defer(d3.json, "data/sample.json")
                     //.defer(d3.json, "data/perDayData.json")
                     .await( function (error, rawData) { dataLoaded(error, rawData); } );;
 

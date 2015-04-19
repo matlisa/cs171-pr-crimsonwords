@@ -23,6 +23,7 @@ PrioVis = function(_parentElement, _data, _metaData){
     this.data = _data;
     this.metaData = _metaData;
     this.displayData = [];
+    this.currentWord = ["education"];
 
     // TODO: define all constants here
     this.margin = {top: 20, right: 20, bottom: 30, left: 0},
@@ -37,10 +38,20 @@ PrioVis = function(_parentElement, _data, _metaData){
  */
 PrioVis.prototype.initVis = function(){
 
+    this.x = d3.scale.linear()
+      .range([0, 315])
+      .domain([0, this.width])
+
     var that = this;
+    this.displayData = this.data.filter(function(d){ return that.currentWord.indexOf(d.word) != -1});
+
+    this.originalData = this.displayData;
+
+    that = this;
 
     //TODO: construct or select SVG
     this.svg = this.parentElement.append("svg")
+        .attr("class", "trial")
         .attr("width", this.width + this.margin.left + this.margin.right)
         .attr("height", this.height + this.margin.top + this.margin.bottom)
       .append("g")
@@ -53,7 +64,64 @@ PrioVis.prototype.initVis = function(){
         .style("color", "red")
         .text("Priority Distribution");
 
+
+
+var i = 0;
+
+
+this.svg.append("rect")
+    .attr("class", "try")
+    .attr("width", this.width)
+    .attr("height", this.height)
+    .on("ontouchstart" in document ? "touchmove" : "mousemove", particle);
+
+function particle() {
+  var m = d3.mouse(this);
+
+  that.svg.insert("circle", "rect")
+      
+      .attr("cx", m[0])
+      .attr("cy", 200)
+      .attr("r", 1e-6)
+      .style("stroke", d3.hsl((i = (i + 1) % 360), 1, .5))
+      .style("stroke-opacity", 1)
+    .transition()
+      .duration(2000)
+      .ease(Math.sqrt)
+      .attr("r", function(d) { 
+        var index = d3.round(that.x(m[0]));
+        var count = that.displayData[0].inform[index].count;
+        return count+10;})
+      .style("stroke-opacity", 1e-6)
+      .remove();
+
+  d3.event.preventDefault();
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     // creates axis and scales
+    /*
     this.x = d3.scale.linear()
       .range([0, this.width-100]);
 
@@ -91,7 +159,7 @@ PrioVis.prototype.initVis = function(){
     this.wrangleData(null);
 
     // call the update method
-    this.updateVis("default");
+    this.updateVis("default");*/
 }
 
 

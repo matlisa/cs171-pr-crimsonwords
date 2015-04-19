@@ -147,3 +147,19 @@ body{
 .focus {
   color: red;
 }
+
+.trial {
+  margin: 0;
+  background: #fff;
+  min-width: 960px;
+}
+
+.try {
+  fill: none;
+  pointer-events: all;
+}
+
+circle {
+  fill: none;
+  stroke-width: 2.5px;
+}
