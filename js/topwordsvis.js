@@ -117,7 +117,6 @@ topWordsVis.prototype.wrangleData= function(_filterFunction){
  */
 topWordsVis.prototype.updateVis = function(){
 	that=this
-    console.log(this.displayData.length)
     // Dear JS hipster,
     // you might be able to pass some options as parameter _option
     // But it's not needed to solve the task.
@@ -130,7 +129,7 @@ topWordsVis.prototype.updateVis = function(){
     this.y.domain(this.displayData.map(function(d,i){return d.word}))
 
     this.x
-      .domain([this.displayData[this.displayData.length-1].sum, this.displayData[0].sum]);
+      .domain([0, this.displayData[0].sum]);
 
     this.yAxis.scale(this.y)
 
@@ -164,7 +163,7 @@ topWordsVis.prototype.updateVis = function(){
       	.attr("fill", function(d,i){return that.color(d)}) 
       	.attr("height" , this.y.rangeBand())
         .attr("width" , function (d) {return that.x(d.sum)})
-        .attr("y", function(d,i){return that.y(d.word)})
+        .attr("y", function(d,i){ return that.y(d.word)})
         .attr("x", function(d,i) { return 0})
 
 }

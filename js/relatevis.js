@@ -39,13 +39,21 @@ PrioVis = function(_parentElement, _data, _metaData){
 PrioVis.prototype.initVis = function(){
 
     this.x = d3.scale.linear()
-      .range([0, 315])
+      .range([0, 314])
       .domain([0, this.width])
 
     var that = this;
-    this.displayData = this.data.filter(function(d){ return that.currentWord.indexOf(d.word) != -1});
+    this.selectedData = this.data.filter(function(d){ return that.currentWord.indexOf(d.word) != -1});
+console.log(this.selectedData)
 
-    this.originalData = this.displayData;
+    this.displayData =this.selectedData[0]["inform"].map(function(d,i){
+        if (i == 0){
+            return d.count
+        }
+        else{
+            return d.count - that.selectedData[0]["inform"][i-1]["count"]
+        }
+    })
 
     that = this;
 
@@ -83,41 +91,26 @@ function particle() {
       .attr("cx", m[0])
       .attr("cy", 200)
       .attr("r", 1e-6)
-      .style("stroke", d3.hsl((i = (i + 1) % 360), 1, .5))
+      .style("stroke", function(d){
+        var index = d3.round(that.x(m[0]));
+        var x = that.displayData[index];
+        if (x<0)
+            {return "red"} 
+        else 
+            {return "green"}})// d3.hsl((i = (i + 1) % 360), 1, .5))
       .style("stroke-opacity", 1)
     .transition()
       .duration(2000)
       .ease(Math.sqrt)
       .attr("r", function(d) { 
         var index = d3.round(that.x(m[0]));
-        var count = that.displayData[0].inform[index].count;
+        var count = Math.abs(that.displayData[index])//.inform[index].count;
         return count+10;})
       .style("stroke-opacity", 1e-6)
       .remove();
 
   d3.event.preventDefault();
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     // creates axis and scales
@@ -171,7 +164,6 @@ PrioVis.prototype.wrangleData= function(_filterFunction, start, end){
     
     // displayData should hold the data which is visualized
     this.displayData = this.filterAndAggregate(_filterFunction, start, end);
-
     //// you might be able to pass some options,
     //// if you don't pass options -- set the default options
     //// the default is: var options = {filter: function(){return true;} }
@@ -203,7 +195,7 @@ PrioVis.prototype.updateVis = function(view){
     var all_days = this.displayData.alldays;
    
     // TODO: implement update graphs (D3: update, enter, exit)
-    
+
     this.x.domain([1, 17])
 
 	if (view == "prop") {
