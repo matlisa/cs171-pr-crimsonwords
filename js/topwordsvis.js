@@ -62,7 +62,7 @@ topWordsVis.prototype.initVis = function(){
       .rangeRoundBands([0, this.height],.1)
 
     this.x = d3.scale.linear()
-      .range([30, this.width/2])
+      .range([0, this.width])
 
 
 
@@ -117,7 +117,7 @@ topWordsVis.prototype.wrangleData= function(_filterFunction){
  */
 topWordsVis.prototype.updateVis = function(){
 	that=this
-
+    console.log(this.displayData.length)
     // Dear JS hipster,
     // you might be able to pass some options as parameter _option
     // But it's not needed to solve the task.
