@@ -56,6 +56,16 @@ console.log(this.selectedData)
     })
 
     that = this;
+    this.axis_scale = d3.scale.linear()
+        .domain([1700, 2014])
+        .range([0, this.width])
+    this.xAxis = d3.svg.axis()
+      .scale(this.axis_scale)
+      .ticks(15)
+      .orient("bottom");
+
+
+
 
     //TODO: construct or select SVG
     this.svg = this.parentElement.append("svg")
@@ -72,7 +82,10 @@ console.log(this.selectedData)
         .style("color", "red")
         .text("Priority Distribution");
 
-
+    this.svg.append("g")
+        .attr("class", "x axis")
+        .attr("transform", "translate(0," + this.height + ")")
+        .call(this.xAxis)
 
 var i = 0;
 
@@ -82,6 +95,8 @@ this.svg.append("rect")
     .attr("width", this.width)
     .attr("height", this.height)
     .on("ontouchstart" in document ? "touchmove" : "mousemove", particle);
+
+
 
 function particle() {
   var m = d3.mouse(this);
@@ -350,6 +365,24 @@ PrioVis.prototype.updateVis = function(view){
  * be defined here.
  * @param selection
  */
+
+PrioVis.prototype.wordFilter = function(currentWord){
+        this.currentWord = [currentWord];
+            this.selectedData = this.data.filter(function(d){ return that.currentWord.indexOf(d.word) != -1});
+console.log(this.selectedData)
+
+    this.displayData =this.selectedData[0]["inform"].map(function(d,i){
+        if (i == 0){
+            return d.count
+        }
+        else{
+            return d.count - that.selectedData[0]["inform"][i-1]["count"]
+        }
+    })
+
+
+}
+
 PrioVis.prototype.onSelectionChange= function (selectionStart, selectionEnd){
     
     // TODO: call wrangle function
