@@ -173,9 +173,6 @@
                                 var div = document.getElementById('word3');
                                 div.innerHTML = word;
                             }
-                            else{
-                                alert("Go suck it")
-                            }
                         
                         }
                         document.getElementById('tags').value = "";
@@ -251,16 +248,10 @@
 
             var startHere = function(){
 
-                //TODO: load data here and call "dataLoaded" afterwards
-                // Hint: http://giscollective.org/d3-queue-js/
                 queue()
                     .defer(d3.json, "data/sample.json")
-                    //.defer(d3.json, "data/perDayData.json")
                     .await( function (error, rawData) { dataLoaded(error, rawData); } );;
-
-                // bind reset zoom button to a function (-- ONLY FOR BONUS --)
                 d3.select("#fitInBtn").on("click", function() {
-                    // TODO: -- ONLY FOR BONUS --
                 });
 
 
