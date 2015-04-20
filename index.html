@@ -92,34 +92,21 @@
     </div>
 
     <script>
-        $(function(){ // this function is called after the HTML document is fully loaded
+        $(function(){
 
-
-            //==========================================
-            //--- HERE IS WHERE ALL THE MAGIC STARTS --
-            //==========================================
-
-
-            // variables keeping global knowledge of the data
             var allData = [];
             var metaData = {};
 
             var freq_vis;
             var prio_vis;
-            // this function can convert Date objects to a string
-            // it can also convert strings to Date objects
-            // see: https://github.com/mbostock/d3/wiki/Time-Formatting
+
             dateFormatter = d3.time.format("%Y-%m-%d %H:%M:%S");
             dateFormat = d3.time.format("%Y");
 
-            // call this function after Data is loaded, reformatted and bound to the variables
             var initVis = function(){
 
-                //TODO: Create an eventHandler  --> DONE :)
                 var MyEventHandler = new Object();
 
-
-                //TODO: Instantiate all Vis Objects here
                 freq_vis = new FreqVis(d3.select("#freqVis"), allData, metaData, MyEventHandler);
                 prio_vis = new PrioVis(d3.select("#relateVis"), allData, metaData, MyEventHandler);
 
@@ -184,14 +171,12 @@
                             freq_vis.currentWord.splice(index, 1);
 
                         }
-                        console.log("after delete", freq_vis.currentWord)
 
                         freq_vis.wrangleData();
                         var extent = freq_vis.brush.extent();
                         if (extent[0] != extent[1]) {
                             freq_vis.displayData = filterdates(freq_vis.displayData, d3.round(extent[0]), d3.round(extent[1]));
                         }
-                        console.log("data", freq_vis.displayData)
                         freq_vis.updateVis(freq_vis.displayData, freq_vis.brush.extent());
                        
                         object.innerHTML = "";
@@ -209,7 +194,6 @@
                     });
 
                     $("form").submit(function (e) {
-                        console.log(freq_vis.currentWord.length)
                         if (freq_vis.currentWord.length < 3) {
                             addgraph();
                         }
@@ -299,11 +283,9 @@
             })
 
             if (found[0]) {
-                console.log(found[0])
                 var y0 = found[0].inform[x0-1700].count
             }
             else {
-                console.log(countvis.originalData)
                 var y0 = countvis.originalData[0].inform[x0-1700].count
             }
 

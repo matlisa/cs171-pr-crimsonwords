@@ -152,8 +152,6 @@ FreqVis.prototype.initVis = function(){
     this.context.append("g")
         .attr("class", "brush");
 
-    //TODO: implement the slider -- see example at http://bl.ocks.org/mbostock/6452972
-    this.addSlider(this.svg)
 
     // filter, aggregate, modify data
     this.wrangleData();
@@ -330,75 +328,3 @@ FreqVis.prototype.onSelectionChange= function (selectionStart, selectionEnd){
 }
 
 
-FreqVis.prototype.addSlider = function(svg){
-    var that = this;
-
-    // TODO: Think of what is domain and what is range for the y axis slider !!
-    var sliderScale = d3.scale.linear().domain([0.01,0.99]).range([0, 200])
-
-    var sliderDragged = function(){
-        var value = Math.max(0, Math.min(200,d3.event.y));
-        var sliderValue = sliderScale.invert(value);
-
-        // TODO: do something here to deform the y scale
-        that.displayData = that.originalData;
-        
-        that.deform
-            .domain(d3.extent(that.displayData, function(d) { return d.count; }))
-            .range(d3.extent(that.displayData, function(d) { return d.count; }))
-            .exponent(sliderValue)
-        
-        d3.select(this)
-            .attr("y", function () {
-                return sliderScale(sliderValue);
-            })
-
-        that.displayData = that.displayData.map(function(d, i) {
-            return {count: that.deform(d.count), time: d.time};
-        })
-
-        that.updateVis();
-    }
-    var sliderDragBehaviour = d3.behavior.drag()
-        .on("drag", sliderDragged)
-
-    var sliderGroup = svg.append("g").attr({
-        class:"sliderGroup",
-        "transform":"translate("+0+","+30+")"
-    })
-
-    sliderGroup.append("rect").attr({
-        class:"sliderBg",
-        x:5,
-        width:10,
-        height:200
-    }).style({
-        fill:"lightgray"
-    })
-
-    sliderGroup.append("rect").attr({
-        "class":"sliderHandle",
-        y:0,
-        width:20,
-        height:10,
-        rx:2,
-        ry:2
-    }).style({
-        fill:"#333333"
-    }).call(sliderDragBehaviour)
-
-}
-
-FreqVis.prototype.brushed = function(data, extent) {
-    var dateFormatter = d3.time.format("%Y.%m.%d");
-
-    var filtered_data = filterdates(this.originalData, d3.round(extent[0]), d3.round(extent[1]));
-    this.updateVis(filtered_data, extent);
-    //var counts = aggregateCountsForRange(filtered_data);
-    var div = document.getElementById('brushInfo');
-    div.innerHTML = 
-    "Time Interval: " + d3.round(extent[0])+ " to " + 
-    d3.round(extent[1]);
-
-
-}
