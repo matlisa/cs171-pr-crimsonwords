@@ -310,7 +310,7 @@ CountVis.prototype.updateVis = function(newdata, extent){
       .attr("transform", "translate(100,0)");
 
     path
-      .attr("id", function(d, i) { console.log(that.currentWord);
+      .attr("id", function(d, i) {
         return that.currentWord[i];})
       .transition(3000)
         .attr("d", this.valueline)
