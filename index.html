@@ -24,10 +24,9 @@
     <!-- Get some nice font-->
     <link href='http://fonts.googleapis.com/css?family=PT+Sans:400,700' rel='stylesheet' type='text/css'>
 
-    <script src = "js/freqvis.js?ver=1"></script>
-    <script src = "js/topvis.js"></script>
-    <script src = "js/relatevis.js?ver=2"></script>
-    <script src = "js/topwordsvis.js?ver=2"></script>
+    <script src = "js/freqvis.js?ver=2"></script>
+    <script src = "js/relatevis.js?ver=1"></script>
+    <script src = "js/topwordsvis.js?ver=1"></script>
 
 
 
@@ -38,17 +37,6 @@
 <body>
     <div class="container">
         <h1>Crimson Words</h1>
-
-
-<div class="ui-widget">
-    <form onsubmit="return false">
-    <label for="tags">Tags: </label>
-    <input id="tags" name = "input" type="text" />
-    <input id="submits" name="submit" type="submit" value="Add" />
-    </form>
-</div>
-
-
         <div class="row">
             <div class="col-md-8 col-sm-12">
                <p> Future Description </p>
@@ -56,33 +44,33 @@
 
         </div>
 
+        <div class="ui-widget">
+            <form onsubmit="return false">
+            <label for="tags">Enter Word: </label>
+            <input id="tags" name = "input" type="text" />
+            <input id="submits" name="submit" type="submit" value="Add" />
+            </form>
+        </div>
+
         <div class="row">
             <div class="col-md-8">
-                <b>current brush:</b> <span id="brushInfo"></span>
-                <div><b>words:</b> 
+                <b>Current Time Interval:</b> <span id="brushInfo"></span>
+                <div><b>Current Words:</b> 
                 <span class = "word" id="word1"></span>
                 <span class = "word" id="word2"></span>
                 <span class = "word" id="word3"></span></div>
             </div>
-
-
 
         </div>
 
         <div class="row">
             <div class="col-md-9" id="freqVis">
             </div>
-            <div class="col-md-3" id="topVis">
+            <div class="col-md-3" id="topWordsVis">
             </div>
         </div>
 
         <div class="row">
-            <div class="col-md-12" id="topWordsVis">
-            </div>
-
-        </div>
-
-                <div class="row">
             <div class="col-md-12" id="relateVis">
             </div>
 
@@ -110,7 +98,7 @@
                 freq_vis = new FreqVis(d3.select("#freqVis"), allData, metaData, MyEventHandler);
                 prio_vis = new PrioVis(d3.select("#relateVis"), allData, metaData, MyEventHandler);
 
-                var topwords_vis = new topWordsVis(d3.select("#topVis"), allData, metaData, MyEventHandler);
+                var topwords_vis = new topWordsVis(d3.select("#topWordsVis"), allData, metaData, MyEventHandler);
 
                 $(MyEventHandler).bind("selectionChanged", function(event, data1, data2){topwords_vis.onSelectionChange(data1,data2)})
             }
@@ -213,10 +201,10 @@
                              return this.id==selected;
                           })
                           .style("opacity", 1)
-                          .style("stroke", "red")
+                          .style("stroke", "#FF2B2B")
                           .style("stroke-width", 1.5);
                         d3.select(this)
-                          .style("color", "red")
+                          .style("color", "#FF2B2B")
                      
                     })
                     d3.selectAll('.word').on("mouseout", function() {
@@ -228,10 +216,6 @@
                           .style("color", null)
   
                     })
-
-
-
-
 
                 }
             }
@@ -269,7 +253,7 @@
 
     }
     var mousemove = function(object, countvis) {      
-                       // **********
+
                        
         if (object) {
             
@@ -289,6 +273,7 @@
                 var y0 = countvis.originalData[0].inform[x0-1700].count
             }
 
+            console.log("diff", countvis.difference)
             countvis.back.select("circle.y")                           
                 .attr("transform",
                       "translate(" + (countvis.x(x0)) +"," +      
@@ -301,13 +286,13 @@
                 .attr("transform",
                       "translate(" + (countvis.x(x0)) +"," + 
                                      countvis.y(y0) + ")")
-      .text(y0);
+                .text(y0);
 
-  countvis.back.select("text.y4")
+            countvis.back.select("text.y4")
                 .attr("transform",
                       "translate(" + (countvis.x(x0)) +"," + 
                                      countvis.y(y0) + ")")
-      .text(y0);
+                .text(y0);
         }   
 
 

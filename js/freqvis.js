@@ -8,6 +8,7 @@ FreqVis = function(_parentElement, _data, _metaData, _eventHandler){
     this.originalData = [];
     this.currentWord = [];
     this.selectword = "";
+    this.difference = 0;
 
     // TODO: define all "constants" here
     this.margin = {top: 10, right: 10, bottom: 100, left: 40};
@@ -36,25 +37,25 @@ FreqVis.prototype.initVis = function(){
 
     this.back.append("circle")
         .attr("class", "y")   
-        .attr("cx", 140)
+        .attr("cx", 42)
         .attr("cy", 10)       
-        .style("fill", "none")
-        .style("stroke", "blue")
+        .style("fill", "#00BBFF")
+        //.style("stroke", "blue")
         .attr("r", 4)
 
     this.back.append("line")
         .attr("class", "tool")
-        .style("stroke", "blue")
+        .style("stroke", "#042A2B")
         .style("stroke-dasharray", "3,3")
         .style("opacity", 0.5)
         .attr("y1", 0)
         .attr("y2", this.height)
-        .attr("x1", 140)
-        .attr("x2", 140);
+        .attr("x1", 42)
+        .attr("x2", 42);
 
     this.back.append("text")
         .attr("class", "y3")
-        .attr("x", 140)
+        .attr("x", 42)
         .style("stroke", "white")
         .style("stroke-width", "3.5px")
         .style("opacity", 0.8)
@@ -62,7 +63,7 @@ FreqVis.prototype.initVis = function(){
         .attr("dy", "1em");
     this.back.append("text")
         .attr("class", "y4")
-        .attr("x", 140)
+        .attr("x", 42)
         .attr("dx", 8)
         .attr("dy", "1em");
 
@@ -73,26 +74,26 @@ FreqVis.prototype.initVis = function(){
 
     this.svg.append("text")
         .attr("class", "title")
-        .attr("x", (this.width / 2))             
-        .attr("y", 0 - (this.margin.top/3))
-        .style("color", "red")
+        .attr("x", (this.width / 2.2))             
+        .attr("y", 20)
+        .style("color", "#FF2B2B")
         .text("Frequency of Words over Time");
 
     // creates axis and scales
     this.x = d3.scale.linear()
-      .range([0, this.width-100]);
+      .range([0, this.width]);
 
     this.x2 = d3.scale.linear()
-      .range([0, this.width-100]);
+      .range([0, this.width]);
 
     this.xbrush = d3.scale.linear()
-      .range([100, this.width]);
+      .range([0, this.width]);
 
     this.y = d3.scale.linear()
       .range([this.height, 0])
 
     this.y2 = d3.scale.linear()
-        .range([this.height2, 0]);
+      .range([this.height2, 0]);
 
     this.deform = d3.scale.pow()
 
@@ -103,8 +104,9 @@ FreqVis.prototype.initVis = function(){
       .ticks(7);
 
     this.xAxis2 = d3.svg.axis()
-        .scale(this.x2)
-        .orient("bottom");
+      .scale(this.x2)
+      .tickFormat(d3.format(""))
+      .orient("bottom");
 
     this.yAxis = d3.svg.axis()
       .scale(this.y)
@@ -123,12 +125,12 @@ FreqVis.prototype.initVis = function(){
         // Add axes visual elements
     this.focus.append("g")
         .attr("class", "x axis")
-        .attr("transform", "translate(100," + this.height + ")")
+        .attr("transform", "translate(0," + this.height + ")")
 
     
     this.focus.append("g")
         .attr("class", "y axis")
-        .attr("transform", "translate(100,0)")
+        //.attr("transform", "translate(100,0)")
       .append("text")
         .attr("transform", "rotate(-90)")
         .attr("y", 6)
@@ -136,23 +138,25 @@ FreqVis.prototype.initVis = function(){
         .style("text-anchor", "end")
         .text("Number of articles, yearly")
 
+
+    
     this.focus.append("rect")   
         .attr("class", "background")          
         .attr("width", this.width)            
         .attr("height", this.height)  
-        .attr("transform", "translate(100,0)")
+        //.attr("transform", "translate(100,0)")
         .style("fill", "none")                
         .style("pointer-events", "all")       
 
 
     this.context.append("g")
         .attr("class", "x axis")
-        .attr("transform", "translate(100," + this.height2 + ")")
+        .attr("transform", "translate(0," + this.height2 + ")")
 
     this.context.append("g")
         .attr("class", "brush");
 
-
+    
     // filter, aggregate, modify data
     this.wrangleData();
 
@@ -163,8 +167,6 @@ FreqVis.prototype.initVis = function(){
         $(that.eventHandler).trigger("selectionChanged", that.brush.extent());
         that.brushed(that.displayData, that.brush.extent());})
 
-
-    
     // call the update method
     this.updateVis(this.displayData);
 }
@@ -172,7 +174,6 @@ FreqVis.prototype.initVis = function(){
 FreqVis.prototype.wrangleData= function(){
 
     // displayData should hold the data which is visualized
-    // pretty simple in this case -- no modifications needed
     var that = this;
     this.displayData = this.data.filter(function(d){ return that.currentWord.indexOf(d.word) != -1});
 
@@ -186,10 +187,10 @@ FreqVis.prototype.updateVis = function(newdata, extent){
         this.displayData = newdata;
     }
     var that = this;
-    // TODO: implement update graphs (D3: update, enter, exit)
+
     if (extent && extent[0] != extent[1]) {
-        this.valueline.x(function(d, i) { return that.x(i + extent[0]); })
-        this.x.domain(extent);
+        this.valueline.x(function(d, i) { return that.x(i + d3.round(extent[0])); })
+        this.x.domain([d3.round(extent[0]), d3.round(extent[1])]) ;
     }
     else {
         this.x.domain([1700, 2015]);
@@ -235,29 +236,27 @@ FreqVis.prototype.updateVis = function(newdata, extent){
 
     // updates graph
 
-
-
     var path = this.focus.selectAll(".line")
       .data(this.displayData.map(function(d) {return d.inform}))
     
     path.enter()
       .append("path")
       .attr("class", "line")
-      .attr("transform", "translate(100,0)");
+      //.attr("transform", "translate(100,0)");
 
     path
       .attr("id", function(d, i) {
         return that.currentWord[i];})
       .transition(3000)
         .attr("d", this.valueline)
-    
+
     var path2 = this.context.selectAll(".line")
       .data(this.originalData.map(function(d) {return d.inform}))
       
     path2.enter()
       .append("path")
       .attr("class", "line")
-      .attr("transform", "translate(100,0)");
+      //.attr("transform", "translate(100,0)");
 
     path2.transition(3000)
       .attr("d", this.valueline2);
@@ -274,7 +273,7 @@ FreqVis.prototype.updateVis = function(newdata, extent){
             return this.innerHTML == selected;
           })
           .style("opacity", 1)
-          .style("color", "red");
+          .style("color", "#FF2B2B");
 
         d3.selectAll(".focus .line")
           .style("opacity", 0.35)
@@ -282,7 +281,7 @@ FreqVis.prototype.updateVis = function(newdata, extent){
             return this.id == selected;
           })
           .style("opacity", 1)
-          .style("stroke", "red")
+          .style("stroke", "#FF2B2B")
           .style("stroke-width", 1.5);
 
       })
@@ -319,11 +318,21 @@ FreqVis.prototype.updateVis = function(newdata, extent){
       .selectAll("rect")
         .attr("height", this.height2);
 
-
-
 }
 
 FreqVis.prototype.onSelectionChange= function (selectionStart, selectionEnd){
+
+}
+
+FreqVis.prototype.brushed = function(data, extent) {
+
+    var dateFormatter = d3.time.format("%Y.%m.%d");
+
+    this.difference =  extent[0] - d3.round(extent[0]);
+    var filtered_data = filterdates(this.originalData, d3.round(extent[0]), d3.round(extent[1]));
+    this.updateVis(filtered_data, extent);
+    var div = document.getElementById('brushInfo');
+    div.innerHTML = d3.round(extent[0])+ " to " + d3.round(extent[1]);
 
 }
 

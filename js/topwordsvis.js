@@ -5,10 +5,10 @@ topWordsVis = function(_parentElement, _data, _metaData, _eventHandler){
     this.metaData = _metaData;
     this.displayData = [];
     this.tot_avg = 0
-
-    this.margin = {top: 50, right: 50, bottom: 100, left: 200},
-    this.width = 230,
-    this.height = 600 - this.margin.top - this.margin.bottom;
+    
+    this.margin = {top: 20, right: 20, bottom: 30, left: 0},
+    this.width = getInnerWidth(this.parentElement) - this.margin.left - this.margin.right,
+    this.height = 500 - this.margin.top - this.margin.bottom;
 
     this.initVis();
 
@@ -23,12 +23,13 @@ topWordsVis.prototype.initVis = function(){
     this.svg = this.parentElement.append("svg")
             .attr("width", this.width + this.margin.left + this.margin.right)
             .attr("height", this.height + this.margin.top + this.margin.bottom)
+
     this.svg.append("g")
         .append("text")
         .attr("class", "title")
-        .text("Top 10 Words of Selected Time Period")
-        .attr("x",75)
-        .attr("y", 30)
+        .text("Top 10 Words of Selected Period")
+        .attr("x", this.width/4)
+        .attr("y", 20)
     this.svg=this.svg.append("g")
         .attr("transform", "translate(" + this.margin.left + "," + this.margin.top + ")");;
 
@@ -39,8 +40,6 @@ topWordsVis.prototype.initVis = function(){
 
     this.x = d3.scale.linear()
       .range([0, this.width])
-
-
 
     this.yAxis = d3.svg.axis()
       .ticks(6)
@@ -53,11 +52,12 @@ topWordsVis.prototype.initVis = function(){
       .orient("bottom");
 
 
-    this.x_axes = this.svg.append("g")
+    this.svg.append("g")
         .attr("class", "x axis")
 
     this.svg.append("g")
         .attr("class", "y axis")
+        .attr("transform", "translate(60, 0)")
 
     this.updateVis();
 }
@@ -73,8 +73,7 @@ topWordsVis.prototype.updateVis = function(){
     this.y.domain(this.displayData.map(function(d,i){
         return d.word}))
 
-    this.x
-      .domain([0, this.displayData[0].sum]);
+    this.x.domain([0, this.displayData[0].sum]);
 
     this.yAxis.scale(this.y)
 
@@ -90,9 +89,8 @@ topWordsVis.prototype.updateVis = function(){
         .attr("dy", ".15em")
 
     this.svg.select(".x.axis")
-        .attr("transform", "translate(0,"+ this.height+")")
+        .attr("transform", "translate(60,"+ (this.height+ 10)+")")
         .call(this.xAxis)
-
 
     this.svg.select(".y.axis")
         .call(this.yAxis)
@@ -103,16 +101,15 @@ topWordsVis.prototype.updateVis = function(){
     
     this.rows.enter().append("rect")
         .attr("class", "row")
-        .attr("transform", "translate(20,0)")
+        .attr("transform", "translate(60,0)")
     
 
     this.rows
-      	.attr("fill", function(d,i){return that.color(d)}) 
+      	.attr("fill", "#CDEDF6") 
       	.attr("height" , this.y.rangeBand())
-        .attr("width" , function (d) {return that.x(d.sum)})
-        .attr("y", function(d,i){ console.log(d.word, that.y(d.word));
-            return that.y(d.word)})
-        .attr("x", function(d,i) { return 0})
+        .attr("width" , function (d) {return that.x(d.sum)-3})
+        .attr("y", function(d,i){ return that.y(d.word)})
+        .attr("x", 3)
 
     this.rows.exit().remove()
 
@@ -138,8 +135,6 @@ topWordsVis.prototype.filterAndAggregate = function(_filter){
     if (_filter != null){
         filter = _filter;
     }
-    //Dear JS hipster, a more hip variant of this construct would be:
-    // var filter = _filter || function(){return true;}
 
     var that = this;
 
