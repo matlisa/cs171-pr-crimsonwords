@@ -34,7 +34,9 @@ topWordsVis.prototype.initVis = function(){
 
     //TODO: construct or select SVG
     this.timespan = (this.timespan||397)
+
     this.color= d3.scale.category10()
+
     this.svg = this.parentElement.append("svg")
             .attr("width", this.width + this.margin.left + this.margin.right)
             .attr("height", this.height + this.margin.top + this.margin.bottom)
@@ -116,7 +118,7 @@ topWordsVis.prototype.wrangleData= function(_filterFunction){
  * the drawing function - should use the D3 selection, enter, exit
  */
 topWordsVis.prototype.updateVis = function(){
-	that=this
+	
     // Dear JS hipster,
     // you might be able to pass some options as parameter _option
     // But it's not needed to solve the task.
@@ -125,14 +127,17 @@ topWordsVis.prototype.updateVis = function(){
     // TODO: implement...
     // TODO: ...update scales
     // TODO: ...update graphs
+    console.log(this.displayData)
 
-    this.y.domain(this.displayData.map(function(d,i){return d.word}))
+    this.y.domain(this.displayData.map(function(d,i){ console.log("domain", d.word);
+        return d.word}))
 
     this.x
       .domain([0, this.displayData[0].sum]);
 
     this.yAxis.scale(this.y)
 
+    var that = this;
 
     this.svg.select(".y.axis")
         .call(this.yAxis)
@@ -148,23 +153,23 @@ topWordsVis.prototype.updateVis = function(){
     this.rows = this.svg
                     .selectAll(".row")
                     .data(this.displayData)
-    this.rects =this.rows.enter()
-                    .append("g")
+    
+    this.rows.enter().append("rect")
                     // .on("mouseover", function(d,i){that.tip.show(d,i)})
                     // .on("mouseout", function(d,i){that.tip.hide(d,i)});
-
-                this.rects
-                    .append("rect")
-    this.rows.attr("class", "row")
+        .attr("class", "row")
         .attr("transform", "translate(20,0)")
-    this.rows.exit().remove()
+    
 
-    this.rows.selectAll("rect")
+    this.rows
       	.attr("fill", function(d,i){return that.color(d)}) 
       	.attr("height" , this.y.rangeBand())
         .attr("width" , function (d) {return that.x(d.sum)})
-        .attr("y", function(d,i){ return that.y(d.word)})
+        .attr("y", function(d,i){ console.log(d.word, that.y(d.word));
+            return that.y(d.word)})
         .attr("x", function(d,i) { return 0})
+
+    this.rows.exit().remove()
 
 }
 

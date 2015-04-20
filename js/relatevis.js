@@ -39,8 +39,8 @@ PrioVis = function(_parentElement, _data, _metaData){
 PrioVis.prototype.initVis = function(){
 
     this.x = d3.scale.linear()
-      .range([0, 314])
-      .domain([0, this.width])
+      .domain([0, 314])
+      .range([0, this.width])
 
     var that = this;
     this.selectedData = this.data.filter(function(d){ return that.currentWord.indexOf(d.word) != -1});
@@ -94,36 +94,61 @@ this.svg.append("rect")
     .attr("class", "try")
     .attr("width", this.width)
     .attr("height", this.height)
-    .on("ontouchstart" in document ? "touchmove" : "mousemove", particle);
+    .on("click", particle)
+    //.on("ontouchstart" in document ? "touchmove" : "mousemove", particle);
 
 
 
 function particle() {
+
   var m = d3.mouse(this);
 
-  that.svg.insert("circle", "rect")
-      
-      .attr("cx", m[0])
+  that.svg.selectAll("change")
+    .data(that.displayData)
+  .enter().append("circle")
+  //.insert("circle", "rect")
+      .attr("class", "change")
+      .attr("cx", function(d, i) { 
+        return that.x(i)})
       .attr("cy", 200)
       .attr("r", 1e-6)
-      .style("stroke", function(d){
-        var index = d3.round(that.x(m[0]));
+      .style("stroke", function(d, i){
+        
+        /*var index = d3.round(that.x(m[0]));
         var x = that.displayData[index];
         if (x<0)
             {return "red"} 
         else 
-            {return "green"}})// d3.hsl((i = (i + 1) % 360), 1, .5))
+            {return "green"}})// d3.hsl((i = (i + 1) % 360), 1, .5)) */
+        if (d < 0)
+            {return "red"} 
+        else 
+            {return "blue"}})
       .style("stroke-opacity", 1)
     .transition()
       .duration(2000)
+      .delay(function(d, i) { return i * 10; })
       .ease(Math.sqrt)
-      .attr("r", function(d) { 
-        var index = d3.round(that.x(m[0]));
-        var count = Math.abs(that.displayData[index])//.inform[index].count;
-        return count+10;})
-      .style("stroke-opacity", 1e-6)
-      .remove();
+      .each(slide);
 
+function slide() {
+  var circle = d3.select(this);
+  (function repeat() {
+    circle = circle.transition()
+      //.attr("cx", that.width)
+      .attr("r", function(d) { 
+        /*var index = d3.round(that.x(m[0]));
+        var count = Math.abs(that.displayData[index])//.inform[index].count;
+        return count+10;*/
+        if (d < 0)
+            {return -(d)+10} 
+        else 
+            {return d+10}
+      })
+      .style("stroke-opacity", 1e-6)
+      .remove()
+  })();
+}
   d3.event.preventDefault();
 }
 
