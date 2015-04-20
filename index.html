@@ -24,7 +24,7 @@
     <!-- Get some nice font-->
     <link href='http://fonts.googleapis.com/css?family=PT+Sans:400,700' rel='stylesheet' type='text/css'>
 
-    <script src = "js/countvis.js?ver=2"></script>
+    <script src = "js/freqvis.js?ver=2"></script>
     <script src = "js/topvis.js"></script>
     <script src = "js/relatevis.js?ver=2"></script>
     <script src = "js/topwordsvis.js?ver=2"></script>
@@ -70,7 +70,7 @@
         </div>
 
         <div class="row">
-            <div class="col-md-9" id="countVis">
+            <div class="col-md-9" id="freqVis">
             </div>
             <div class="col-md-3" id="topVis">
             </div>
@@ -104,39 +104,13 @@
             var allData = [];
             var metaData = {};
 
-            var count_vis;
+            var freq_vis;
             var prio_vis;
             // this function can convert Date objects to a string
             // it can also convert strings to Date objects
             // see: https://github.com/mbostock/d3/wiki/Time-Formatting
             dateFormatter = d3.time.format("%Y-%m-%d %H:%M:%S");
             dateFormat = d3.time.format("%Y");
-
-            // console.log(dateFormatter("2005-01-24 06:00:00"))
-
-            // var aggregateCountsForRange = function(from, to){
-
-            // var count = 0;
-
-            // // TODO: TASK 2 B -- count here for the given time range
-            // // you might make use of the map and filter functions
-            // // HINT: javascript Date objects are comparable !!
-            // // see: http://www.w3schools.com/js/js_date_methods.asp
-
-            // from = Date.parse(from);
-            // to = Date.parse(to);
-            
-            // allData.filter( function (d) {
-            //         curr_time = Date.parse(d.time);
-            //         return from <= curr_time && curr_time <= to;
-            //     })
-            //     .map(function (d) {
-            //         return count += d.count;
-            //     })
-
-            // }
-
-
 
             // call this function after Data is loaded, reformatted and bound to the variables
             var initVis = function(){
@@ -146,42 +120,17 @@
 
 
                 //TODO: Instantiate all Vis Objects here
-                count_vis = new CountVis(d3.select("#countVis"), allData, metaData, MyEventHandler);
+                freq_vis = new FreqVis(d3.select("#freqVis"), allData, metaData, MyEventHandler);
                 prio_vis = new PrioVis(d3.select("#relateVis"), allData, metaData, MyEventHandler);
 
                 var topwords_vis = new topWordsVis(d3.select("#topVis"), allData, metaData, MyEventHandler);
-                // var prio_vis = new PrioVis(d3.select("#prioVis"), allData, metaData, MyEventHandler)
-
-                // TODO: bind the eventHandler to the Vis Objects
-                // events will be created from the CountVis object (nothing to do here)
-                // events will be consumed by the PrioVis and AgeVis object (binding should happen here)
-                // format1 = d3.time.format("%x")
-
-                // $(MyEventHandler).bind("selectionChanged", function(event, type){
-                //     age_vis.onSelectionChange(type[0], type[1]);d3.select("#brushInfo").selectAll("text").remove();d3.select("#brushInfo").append("text").attr("font-size", "6px").text(""+format1(type[0])+" to "+format1(type[1])+"")
-                // });
 
                 $(MyEventHandler).bind("selectionChanged", function(event, data1, data2){topwords_vis.onSelectionChange(data1,data2)})
             }
 
             // call this function after both files are loaded -- error should be "null" if no error
-            var dataLoaded = function (error, _allData) {
-                
+            var dataLoaded = function (error, _allData, meh) {
                 if (!error) {
-
-                    // make our data look nicer and more useful:
-                    // per Day we want to have an object looking like this:
-                    /*
-                    * {
-                    *   time: .. (should be a Date object)
-                    *   count: .. (number of all votes)
-                    *   prios: [..,..,..,...] (array of number of votes per priority -> array length =16)
-                    *   ages: [..,..,..,..] (array counts of votes per age 0-99)
-                    *
-                    * */
-
-
-                    /*allData = [{"word": "education", "count":_allData.education}, {"word": "Faust", "count":_allData.Faust}, {"word": "President", "count":_allData.President}]*/
 
                     allData = _allData.map(function(d) { 
                                 var res=d3.range(0,315).map(function(e,i) {
@@ -190,62 +139,26 @@
                                 d.count.map(function(dd, i) {
                                     res[parseInt(dd.web_publish_date.substring(0, 4))-1700].count += 1;
                                     
-
                                 })
                                 var key = {
                                     inform: res,
                                     word: d.word
                                 }
 
-                                 /*var res = {
-                                     time: dateFormatter.parse(d.day),
-                                     count: parseInt(d["count(*)"])
-                                 };*/
-
-                                // TODO: implement that  !!
-                                // res.prios = d3.range(0,16).map(function(){return 0;})
-                                // should be an array of 16 numbers with the total count MAPping the prio values,
-                                //  [d["sum(p0)"], d["sum(p1)"], d["sum(p2)"],...]
-                                // Example:
-                                // [10,200,500,... ]
-                                // for(var i =0; i < 16; i++){
-                                //     res.prios[i]+=parseInt(d["sum(p"+i+")"])
-                                // }
-                                // This is ONE way to create an array of length 100
-                                // and set every value to "0")
-
-                                // res.ages = d3.range(100).map(function(){return 0;})
-
-                                // TODO: Assign the count for each age to the index position
-                                // eg: res.ages[22] should contain the count value for age 22
-                                // BE AWARE THAT THE DATA MIGHT CONTAIN ages >99 which you have to handle especially
-                                // final result:
-                                // [0,0,0,..,1034,23,...] -- array length is 100
-
-                //                 for (var i =0; i < d.age.length; i++){
-                //                     if (d.age[i].age < 100){
-                //                         res.ages[d.age[i].age]+=d.age[i]["count(*)"]
-                //                     }
-                //                     else {
-                //                         res.ages[99]+= d.age[i]["count(*)"]
-                //                     }
-                //                 }
-
-
                                 return key;
                     })
 
                     var addgraph = function() {
                         var word = document.getElementById('tags').value;
-                        if (count_vis.currentWord.indexOf(word) == -1) {
-                            count_vis.currentWord.push(word);
+                        if (freq_vis.currentWord.indexOf(word) == -1) {
+                            freq_vis.currentWord.push(word);
 
-                            count_vis.wrangleData();
-                            var extent = count_vis.brush.extent();
+                            freq_vis.wrangleData();
+                            var extent = freq_vis.brush.extent();
                             if (extent[0] != extent[1]) {
-                            count_vis.displayData = filterdates(count_vis.displayData, d3.round(extent[0]), d3.round(extent[1]));
+                            freq_vis.displayData = filterdates(freq_vis.displayData, d3.round(extent[0]), d3.round(extent[1]));
                             }
-                            count_vis.updateVis(count_vis.displayData, count_vis.brush.extent());
+                            freq_vis.updateVis(freq_vis.displayData, freq_vis.brush.extent());
                            
                             // need to condense the following
                             if (!document.getElementById('word1').innerHTML) {
@@ -260,36 +173,36 @@
                                 var div = document.getElementById('word3');
                                 div.innerHTML = word;
                             }
+                            else{
+                                alert("Go suck it")
+                            }
                         
                         }
                         document.getElementById('tags').value = "";
                     }
 
                     var deletegraph = function(object) {
-                        var index = count_vis.currentWord.indexOf(object.innerHTML);
+                        var index = freq_vis.currentWord.indexOf(object.innerHTML);
                         if (index > -1) {
-                            count_vis.currentWord.splice(index, 1);
+                            freq_vis.currentWord.splice(index, 1);
 
                         }
-                        console.log("after delete", count_vis.currentWord)
+                        console.log("after delete", freq_vis.currentWord)
 
-                        count_vis.wrangleData();
-                        var extent = count_vis.brush.extent();
+                        freq_vis.wrangleData();
+                        var extent = freq_vis.brush.extent();
                         if (extent[0] != extent[1]) {
-                            count_vis.displayData = filterdates(count_vis.displayData, d3.round(extent[0]), d3.round(extent[1]));
+                            freq_vis.displayData = filterdates(freq_vis.displayData, d3.round(extent[0]), d3.round(extent[1]));
                         }
-                        console.log("data", count_vis.displayData)
-                        count_vis.updateVis(count_vis.displayData, count_vis.brush.extent());
+                        console.log("data", freq_vis.displayData)
+                        freq_vis.updateVis(freq_vis.displayData, freq_vis.brush.extent());
                        
                         object.innerHTML = "";
 
                     }
                     
-                    //metaData = _metaData;
                     initVis();
-                    /*d3.select("#submits").on("click", function() {
-                        addgraph();
-                    })*/          
+
                     var allWords = allData.map(function(d) {
                         return d.word;
                     });
@@ -306,7 +219,6 @@
                     })
                     d3.selectAll(".word").on("mouseover", function(p) {
                         var selected = this.innerHTML;
-                        //countvis.selectword = selected;
                         d3.selectAll(".focus .line")
                           .style("opacity", 0.35)
                           .filter(function(d) { 
@@ -381,46 +293,43 @@
         if (object) {
             
             var x0 = d3.round(countvis.x.invert(d3.mouse(object)[0]))
-//console.log(countvis.originalData, countvis.selectword)
+
 
             var found = countvis.originalData.filter(function(d, i) {
                 
                 return d.word == countvis.selectword;
-                /*found = d.word.filter(function(dd, i) {
-                    console.log(dd)
-                return true; })*/
-            
-            
 
             })
-            //console.log(found[0])
+
             if (found[0]) {
+                console.log(found[0])
                 var y0 = found[0].inform[x0-1700].count
             }
             else {
+                console.log(countvis.originalData)
                 var y0 = countvis.originalData[0].inform[x0-1700].count
             }
 
-            countvis.back.select("circle.y")                           // **********
-                .attr("transform",                             // **********
-                      "translate(" + (countvis.x(x0)) +"," +         // **********
+            countvis.back.select("circle.y")                           
+                .attr("transform",
+                      "translate(" + (countvis.x(x0)) +"," +      
                                      countvis.y(y0) + ")");
             countvis.back.select(".tool")
                 .attr("transform",
-                        "translate(" + (countvis.x(x0)) +"," +         // **********
+                        "translate(" + (countvis.x(x0)) +"," + 
                                      "0)");
             countvis.back.select("text.y3")
-                .attr("transform",                             // **********
-                      "translate(" + (countvis.x(x0)) +"," +         // **********
+                .attr("transform",
+                      "translate(" + (countvis.x(x0)) +"," + 
                                      countvis.y(y0) + ")")
       .text(y0);
 
   countvis.back.select("text.y4")
-                .attr("transform",                             // **********
-                      "translate(" + (countvis.x(x0)) +"," +         // **********
+                .attr("transform",
+                      "translate(" + (countvis.x(x0)) +"," + 
                                      countvis.y(y0) + ")")
       .text(y0);
-        }       // **********
+        }   
 
 
     }   

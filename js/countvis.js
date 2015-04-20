@@ -1,25 +1,5 @@
-/**
- * Created by Hendrik Strobelt (hendrik.strobelt.com) on 1/28/15.
- */
 
-
-/*
- *
- * ======================================================
- * We follow the vis template of init - wrangle - update
- * ======================================================
- *
- * */
-
-/**
- * CountVis object for HW3 of CS171
- * @param _parentElement -- the HTML or SVG element (D3 node) to which to attach the vis
- * @param _data -- the data array
- * @param _metaData -- the meta-data / data description object
- * @param _eventHandler -- the Eventhandling Object to emit data to (see Task 4)
- * @constructor
- */
-CountVis = function(_parentElement, _data, _metaData, _eventHandler){
+FreqVis = function(_parentElement, _data, _metaData, _eventHandler){
     this.parentElement = _parentElement;
     this.data = _data;
     this.metaData = _metaData;
@@ -39,35 +19,13 @@ CountVis = function(_parentElement, _data, _metaData, _eventHandler){
     this.initVis();
 }
 
+FreqVis.prototype.initVis = function(){
 
-/**
- * Method that sets up the SVG and the variables
- */
-CountVis.prototype.initVis = function(){
-
-    var that = this; // read about the this
-
-    //TODO: implement here all things that don't change
-    //TODO: implement here all things that need an initial status
-    // Examples are:
-    // - construct SVG layout
-    // - create axis
-    // -  implement brushing !!
-    // --- ONLY FOR BONUS ---  implement zooming
-    
-    // TODO: modify this to append an svg element, not modify the current placeholder SVG element
+    var that = this;
 
     this.svg = this.parentElement.append("svg")
         .attr("width", this.width + this.margin.left + this.margin.right)
         .attr("height", this.height + this.margin.top + this.margin.bottom)
-
-    /*this.svg.append("defs").append("clipPath")
-        .attr("id", "clip")
-      .append("rect")
-        .attr("width", this.width)
-        .attr("height", this.height);*/
-
-
 
     this.focus = this.svg.append("g")
         .attr("class", "focus")
@@ -76,12 +34,12 @@ CountVis.prototype.initVis = function(){
     this.back = this.svg.append("g")
         .style("display", "none")
 
-    this.back.append("circle")                                 // **********
+    this.back.append("circle")
         .attr("class", "y")   
         .attr("cx", 140)
-        .attr("cy", 10)                          // **********
-        .style("fill", "none")                             // **********
-        .style("stroke", "blue")                           // **********
+        .attr("cy", 10)       
+        .style("fill", "none")
+        .style("stroke", "blue")
         .attr("r", 4)
 
     this.back.append("line")
@@ -162,14 +120,6 @@ CountVis.prototype.initVis = function(){
         .x(function(d, i) { return that.x2(i + 1700); })
         .y(function(d) {return that.y2(d.count); });
 
-/*
-    this.area = d3.svg.area()
-      .interpolate("monotone")
-      .x(function(d, i) {return that.x(i + 1700); })
-      .y0(this.height)
-      .y1(function(d) {return that.y(d.count); });*/
-
-
         // Add axes visual elements
     this.focus.append("g")
         .attr("class", "x axis")
@@ -187,12 +137,12 @@ CountVis.prototype.initVis = function(){
         .text("Number of articles, yearly")
 
     this.focus.append("rect")   
-        .attr("class", "background")                                  // **********
-        .attr("width", this.width)                              // **********
+        .attr("class", "background")          
+        .attr("width", this.width)            
         .attr("height", this.height)  
-        .attr("transform", "translate(100,0)")                          // **********
-        .style("fill", "none")                             // **********
-        .style("pointer-events", "all")                    // **********
+        .attr("transform", "translate(100,0)")
+        .style("fill", "none")                
+        .style("pointer-events", "all")       
 
 
     this.context.append("g")
@@ -221,12 +171,7 @@ CountVis.prototype.initVis = function(){
     this.updateVis(this.displayData);
 }
 
-
-
-/**
- * Method to wrangle the data. In this case it takes an options object
-  */
-CountVis.prototype.wrangleData= function(){
+FreqVis.prototype.wrangleData= function(){
 
     // displayData should hold the data which is visualized
     // pretty simple in this case -- no modifications needed
@@ -237,13 +182,7 @@ CountVis.prototype.wrangleData= function(){
 
 }
 
-
-
-/**
- * the drawing function - should use the D3 selection, enter, exit
- * @param _options -- only needed if different kinds of updates are needed
- */
-CountVis.prototype.updateVis = function(newdata, extent){
+FreqVis.prototype.updateVis = function(newdata, extent){
 
     if (newdata) {
         this.displayData = newdata;
@@ -261,7 +200,6 @@ CountVis.prototype.updateVis = function(newdata, extent){
     this.x2.domain([1700, 2015]);
     this.xbrush.domain([1700, 2015]);
 
-    //var max = [];
     var allcounts = d3.range(0, this.displayData.length).map(function(){return [];});
     this.displayData.forEach(
             function(d, j){ 
@@ -369,62 +307,12 @@ CountVis.prototype.updateVis = function(newdata, extent){
         .on("mousemove", function() {
             mousemove(this, that)
         }); 
-    /*d3.select(".background")
-      .on("mousemove", function(){ 
-         mousex = d3.mouse(this);
-         mousex = mousex[0] + 5;
-         that.vertical.attr("x", mousex )})
-      .on("mouseover", function(){  
-         mousex = d3.mouse(this);
-         mousex = mousex[0] + 5;
-         that.vertical.attr("x", mousex )});*/
-    /*if (path[0].length) {
-
-    var circle = 
-        this.focus.append("circle")
-          .attr("cx", 100)
-          .attr("cy", 350)
-          .attr("r", 3)
-          .attr("fill", "red");
-
-    var pathEl = path.node();
-    var pathLength = pathEl.getTotalLength();
-    var BBox = pathEl.getBBox();
-    var scale = pathLength/BBox.width;
-    var offsetLeft = document.getElementById("word1").offsetLeft;
-
-
-    this.focus.on("mousemove", function() {
-      var x = d3.event.pageX - offsetLeft-140; 
-      console.log("hi", d3.event.pageX, offsetLeft)
-      var beginning = x, end = pathLength, target;
-      while (true) {
-        target = Math.floor((beginning + end) / 2);
-        pos = pathEl.getPointAtLength(target);
-        if ((target === end || target === beginning) && pos.x !== x) {
-            break;
-        }
-        if (pos.x > x)      end = target;
-        else if (pos.x < x) beginning = target;
-        else                break; //position found
-      }
-      console.log(x, pos)
-      circle
-        .attr("opacity", 1)
-        .attr("cx", x+100)
-        .attr("cy", pos.y);
-    });
-    }*/
 
     path.exit()
       .remove();
 
     path2.exit()
       .remove();
-    
-
-
-
 
     this.brush.x(this.xbrush)
     
@@ -437,36 +325,12 @@ CountVis.prototype.updateVis = function(newdata, extent){
 
 }
 
-/**
- * Gets called by event handler and should create new aggregated data
- * aggregation is done by the function "aggregate(filter)". Filter has to
- * be defined here.
- * @param selection
- */
-CountVis.prototype.onSelectionChange= function (selectionStart, selectionEnd){
+FreqVis.prototype.onSelectionChange= function (selectionStart, selectionEnd){
 
-    // TODO: call wrangle function
-    // do nothing -- no update when brushing
 }
 
 
-/*
- *
- * ==================================
- * From here on only HELPER functions
- * ==================================
- *
- * */
-
-
-
-
-
-/**
- * creates the y axis slider
- * @param svg -- the svg element
- */
-CountVis.prototype.addSlider = function(svg){
+FreqVis.prototype.addSlider = function(svg){
     var that = this;
 
     // TODO: Think of what is domain and what is range for the y axis slider !!
@@ -525,20 +389,11 @@ CountVis.prototype.addSlider = function(svg){
 
 }
 
-CountVis.prototype.brushed = function(data, extent) {
+FreqVis.prototype.brushed = function(data, extent) {
     var dateFormatter = d3.time.format("%Y.%m.%d");
-    /*
-    this.x.domain(this.brush.empty() ? this.x2.domain() : this.brush.extent());
-
-    this.focus.selectAll(".line")
-        .attr("transform", "translate(100,0)")
-        .attr("d", this.valueline);
-    this.focus.select(".x.axis").call(this.xAxis);*/
-
 
     var filtered_data = filterdates(this.originalData, d3.round(extent[0]), d3.round(extent[1]));
     this.updateVis(filtered_data, extent);
-    //var counts = aggregateCountsForRange(filtered_data);
     var div = document.getElementById('brushInfo');
     div.innerHTML = 
     "Time Interval: " + d3.round(extent[0])+ " to " + 
@@ -546,25 +401,3 @@ CountVis.prototype.brushed = function(data, extent) {
 
 
 }
-
-/*CountVis.prototype.mousemove = function() {      
-                       // **********
-                       console.log(d3.mouse(this)[0])
-        var x0 = this.x.invert(d3.mouse(this)[0]),              // **********
-            i = bisectDate(data, x0, 1),                   // **********
-            d0 = data[i - 1],                              // **********
-            d1 = data[i],                                  // **********
-            d = x0 - d0.date > d1.date - x0 ? d1 : d0;     // **********
-        console.log("data", data)
-
-        this.back.select("circle.y")                           // **********
-            .attr("transform",                             // **********
-                  "translate(" + this.x(100) + "," +         // **********
-                                 this.y(200) + ")");        // **********
-        }   */
-
-
-
-
-
-
