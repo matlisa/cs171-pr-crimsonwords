@@ -268,7 +268,7 @@ FreqVis.prototype.updateVis = function(newdata, extent){
       .attr("id", function(d, i) {
         return that.currentWord[i];})
       .on("click", function(d){
-        window.location.href = "/#percent";
+        window.location.href = "http://matlisa.github.io/cs171-pr-crimsonwords/#percent";
         $(that.eventHandler).trigger("selectionChanged", this.id);
 
       })
