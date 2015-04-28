@@ -9,13 +9,28 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>Grayscale - Start Bootstrap Theme</title>
+    <title>CRIMSON WORDS</title>
+    <!-- ADD Libraries-->
+    <script src="libs/d3/d3.min.js" charset="utf-8"></script>
+    <script src="libs/jquery/jquery-2.1.1.min.js" charset="utf-8"></script>
+    <script src="libs/bootstrap/js/bootstrap.min.js" charset="utf-8"></script>
+    <script src="http://d3js.org/queue.v1.min.js"></script>
+
+
+
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+    <script src="//code.jquery.com/jquery-1.10.2.js"></script>
+    <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+    <script src="http://labratrevenge.com/d3-tip/javascripts/d3.tip.v0.6.3.js"></script>
+
+
 
     <!-- Bootstrap Core CSS -->
     <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
 
     <!-- Custom CSS -->
-    <link href="css/grayscale.css" rel="stylesheet">
+    <link href="css/grayscale.css?ver=1" rel="stylesheet">
 
     <!-- Custom Fonts -->
     <link href="font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
@@ -29,6 +44,17 @@
         <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
 
+
+
+
+
+
+    <script src = "js/freqvis.js?ver=2"></script>
+    <script src = "js/relatevis.js?ver=1"></script>
+    <script src = "js/topwordsvis.js?ver=1"></script>
+    <!-- add own stylesheet-->
+    <link rel="stylesheet" type="text/css" href="css/myStyle.css?ver=1">
+
 </head>
 
 <body id="page-top" data-spy="scroll" data-target=".navbar-fixed-top">
@@ -37,11 +63,11 @@
     <nav class="navbar navbar-custom navbar-fixed-top" role="navigation">
         <div class="container">
             <div class="navbar-header">
-                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-main-collapse">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-main-collapse" >
                     <i class="fa fa-bars"></i>
                 </button>
                 <a class="navbar-brand page-scroll" href="#page-top">
-                    <i class="fa fa-play-circle"></i>  <span class="light">Start</span> Bootstrap
+                    <i class="fa fa-play-circle"></i>  <span class="light">Start</span> Visualization
                 </a>
             </div>
 
@@ -56,7 +82,7 @@
                         <a class="page-scroll" href="#about">About</a>
                     </li>
                     <li>
-                        <a class="page-scroll" href="#download">Download</a>
+                        <a class="page-scroll" href="#vis">Visualization</a>
                     </li>
                     <li>
                         <a class="page-scroll" href="#contact">Contact</a>
@@ -74,8 +100,8 @@
             <div class="container">
                 <div class="row">
                     <div class="col-md-8 col-md-offset-2">
-                        <h1 class="brand-heading">Grayscale</h1>
-                        <p class="intro-text">A free, responsive, one page Bootstrap theme.<br>Created by Start Bootstrap.</p>
+                        <h1 class="brand-heading">Crimson Words</h1>
+                        <p class="intro-text">A time-serialized visualization of word appearances in Harvard&#39;s student publication, The Crimson.</p>
                         <a href="#about" class="btn btn-circle page-scroll">
                             <i class="fa fa-angle-double-down animated"></i>
                         </a>
@@ -89,65 +115,336 @@
     <section id="about" class="container content-section text-center">
         <div class="row">
             <div class="col-lg-8 col-lg-offset-2">
-                <h2>About Grayscale</h2>
-                <p>Grayscale is a free Bootstrap 3 theme created by Start Bootstrap. It can be yours right now, simply download the template on <a href="http://startbootstrap.com/template-overviews/grayscale/">the preview page</a>. The theme is open source, and you can use it for any purpose, personal or commercial.</p>
-                <p>This theme features stock photos by <a href="http://gratisography.com/">Gratisography</a> along with a custom Google Maps skin courtesy of <a href="http://snazzymaps.com/">Snazzy Maps</a>.</p>
-                <p>Grayscale includes full HTML, CSS, and custom JavaScript files along with LESS files for easy customization.</p>
+                <h2>About Crimson Words</h2>
+                <p>A dynamic data visualization of <em>The Crimson</em> articles over the span of the organization's history. Presented and created by Kim Soffen, Lisa Ma, and Jimmy Lin.</p>
+                <a href="#vis" class="btn btn-circle page-scroll">
+                <i class="fa fa-angle-double-down animated"></i>
+                </a>
             </div>
         </div>
     </section>
+
+    <!-- Visualization Section -->
+    <section id="vis" class="container content-section text-center">
+        <p id = "abovevis"></p>
+        <br>
+        <div id = "addword" class="ui-widget">
+            <form onsubmit="return false" class="form-inline">
+            <label for="tags">Enter Word: </label>
+            <input class="form-control" id="tags" name = "input" type="text" />
+            <input class="btn btn-default" id="submits" name="submit" type="submit" value="Add" onclick = "appear(); "/>
+            </form>
+        </div>
+        <br>
+        <div class="row">
+            <b>Current Time Interval: </b><span id="brushInfo"></span>
+            <b>Current Words:</b> 
+            <span class = "word" id="word1"></span>
+            <span class = "word" id="word2"></span>
+            <span class = "word" id="word3"></span>
+        </div>
+        <br>
+        <div class="row">
+            <div class="col-md-9" id="freqVis">
+                <b>Frequency of Words over Time</b> 
+            </div>
+            <div class="col-md-3" id="topWordsVis">
+                <b>Top 10 Words of Selected Period</b>
+            </div>
+        </div>
+        <p id = "percent"></p>
+        <br>
+        <div class="row" >
+            <div class="col-lg-12 col-lg-offset-2" id="relateVis">
+                <b>Percent Change over Time</b><span id="changeInfo"></span>
+            </div>
+        </div>
+        <br>
+        <p id = "percentguide">Click anywhere on the graph to start the animation!</p>
+
+     </section>
+<script>
+        $(function(){
+            document.getElementById("vis").style.visibility = "hidden";
+            document.getElementById("addword").style.visibility = "visible";
+
+            var allData = [];
+            var metaData = {};
+
+            var freq_vis;
+            var relate_vis;
+
+            dateFormatter = d3.time.format("%Y-%m-%d %H:%M:%S");
+            dateFormat = d3.time.format("%Y");
+
+            var initVis = function(){
+
+                var MyEventHandler = new Object();
+                var MyEventHandler2 = new Object();
+
+                freq_vis = new FreqVis(d3.select("#freqVis"), allData, metaData, MyEventHandler, MyEventHandler2);
+
+                // initialize graph
+                if (freq_vis.currentWord) {
+                    var div = document.getElementById('word1');
+                    div.innerHTML = freq_vis.currentWord;
+                }
+
+                relate_vis = new PrioVis(d3.select("#relateVis"), allData, metaData, MyEventHandler);
+
+                var topwords_vis = new topWordsVis(d3.select("#topWordsVis"), allData, metaData, MyEventHandler2);
+
+                $(MyEventHandler).bind("selectionChanged", function(event, data1){
+                    relate_vis.onSelectionChange(data1)
+                })
+
+                $(MyEventHandler2).bind("brushChanged", function(event, d, e){
+                    topwords_vis.onBrushChange(d, e);
+                })
+
+            }
+
+            // call this function after both files are loaded -- error should be "null" if no error
+            var dataLoaded = function (error, _allData, meh) {
+                if (!error) {
+
+                    allData = _allData.map(function(d) { 
+                                var res=d3.range(0,315).map(function(e,i) {
+                                    
+                                    return {count:0, link:"" };});
+                                d.count.map(function(dd, i) {
+                                    res[parseInt(dd.web_publish_date.substring(0, 4))-1700].count += 1;
+                                    
+                                })
+                                var key = {
+                                    inform: res,
+                                    word: d.word
+                                }
+
+                                return key;
+                    })
+
+                    var addgraph = function(word) {
+                        if (!word) {
+                            word = document.getElementById('tags').value;
+                        }
+                        if (freq_vis.currentWord.indexOf(word) == -1) {
+                            freq_vis.currentWord.push(word);
+
+                            freq_vis.wrangleData();
+                            var extent = freq_vis.brush.extent();
+                            if (extent[0] != extent[1]) {
+                            freq_vis.displayData = filterdates(freq_vis.displayData, d3.round(extent[0]), d3.round(extent[1]));
+                            }
+                            freq_vis.updateVis(freq_vis.displayData, freq_vis.brush.extent());
+                           
+                            // need to condense the following
+                            if (!document.getElementById('word1').innerHTML) {
+                                var div = document.getElementById('word1');
+                                div.innerHTML = word;
+                            }
+                            else if (!document.getElementById('word2').innerHTML) {
+                                var div = document.getElementById('word2');
+                                div.innerHTML = word;
+                            }
+                            else if (!document.getElementById('word3').innerHTML) {
+                                var div = document.getElementById('word3');
+                                div.innerHTML = word;
+                            }
+                        
+                        }
+                        document.getElementById('tags').value = "";
+                    }
+
+                    var deletegraph = function(object) {
+                        var index = freq_vis.currentWord.indexOf(object.innerHTML);
+                        if (index > -1) {
+                            freq_vis.currentWord.splice(index, 1);
+
+                        }
+
+                        freq_vis.wrangleData();
+                        var extent = freq_vis.brush.extent();
+                        if (extent[0] != extent[1]) {
+                            freq_vis.displayData = filterdates(freq_vis.displayData, d3.round(extent[0]), d3.round(extent[1]));
+                        }
+                        freq_vis.updateVis(freq_vis.displayData, freq_vis.brush.extent());
+                       
+                        object.innerHTML = "";
+
+                    }
+                    
+                    initVis();
+                    //addgraph("Harvard");
+
+                    var allWords = allData.map(function(d) {
+                        return d.word;
+                    });
+
+                    $( "#tags" ).autocomplete({
+                      source: allWords
+                    });
+
+                    
+
+                    $("form").submit(function (e) {
+                        if (freq_vis.currentWord.length < 3) {
+                            addgraph();
+                        }
+                        else {
+                            alert("Maximum number of words displayed. Please remove one of your selections by clicking on the word.")
+                        }
+                    });
+                    d3.selectAll(".word").on("click", function() {
+                        deletegraph(this);
+                    })
+                    d3.selectAll(".word").on("mouseover", function(p) {
+                        var selected = this.innerHTML;
+                        d3.selectAll(".focus .line")
+                          .style("opacity", 0.35)
+                          .filter(function(d) { 
+
+                             return this.id==selected;
+                          })
+                          .style("opacity", 1)
+                          .style("stroke", "#F0C808")
+                          .style("stroke-width", 2.5);
+                        d3.select(this)
+                          .style("color", "#F0C808")
+                     
+                    })
+                    d3.selectAll('.word').on("mouseout", function() {
+                        d3.selectAll(".line")
+                          .style("opacity", 1)
+                          .style("stroke", null)
+                          .style("stroke-width", null);
+                        d3.select(this)
+                          .style("color", null)
+  
+                    })
+
+                }
+            }
+
+            var startHere = function(){
+
+                queue()
+                    .defer(d3.json, "data/sample.json")
+                    .await( function (error, rawData) { dataLoaded(error, rawData); } );;
+                d3.select("#fitInBtn").on("click", function() {
+                });
+
+
+            }
+
+            startHere();
+        })
+    
+    var getInnerWidth = function(element) {
+        var style = window.getComputedStyle(element.node(), null);
+
+        return parseInt(style.getPropertyValue('width'));
+    }
+    var filterdates = function(data, from, to) {
+        var filtered = [];
+        var newdata = [];
+        data.forEach(function(d, j){
+            filtered[j] = d.inform.filter(function(dd, i) {
+                return ((i+1700) >= from && (i+1700) <= to); })
+            
+            newdata[j] = {"word": d.word, "inform": filtered[j]}
+        });
+
+        return newdata;
+
+    }
+    var mousemove = function(object, countvis, word) {      
+
+                       
+        if (object) {
+            var y0;
+            var x0 = d3.round(countvis.x.invert(d3.mouse(object)[0]))
+
+            var found = countvis.originalData.filter(function(d, i) {
+                
+                return d.word == countvis.selectword;
+
+            })
+
+            if (found[0]) {
+                y0 = found[0].inform[x0-1700].count
+            }
+            else {
+                y0 = countvis.originalData[0].inform[x0-1700].count
+            }
+
+            countvis.back.select("circle.y")                           
+                .attr("transform",
+                      "translate(" + (countvis.x(x0)) +"," +      
+                                     countvis.y(y0) + ")");
+            countvis.back.select(".tool")
+                .attr("transform",
+                        "translate(" + (countvis.x(x0)) +"," + 
+                                     "0)");
+            countvis.back.select("text.y4")
+                .attr("transform",
+                      "translate(" + (countvis.x(x0)) +"," + 
+                                     countvis.y(y0) + ")")
+                .text("Year: " + x0 + ",\n Count: " +y0);
+
+            countvis.back.select("rect.y3")
+                .attr("x", countvis.x(x0)-20)
+                .attr("y", countvis.y(y0)-35) 
+
+        }   
+
+
+    }   
+
+       
+    var appear = function() {
+        document.getElementById("vis").style.visibility = "visible";
+        window.location.href = "#abovevis";
+    }
+
+    </script>
+
+
+
+
 
     <!-- Download Section -->
     <section id="download" class="content-section text-center">
         <div class="download-section">
             <div class="container">
                 <div class="col-lg-8 col-lg-offset-2">
-                    <h2>Download Grayscale</h2>
-                    <p>You can download Grayscale for free on the preview page at Start Bootstrap.</p>
-                    <a href="http://startbootstrap.com/template-overviews/grayscale/" class="btn btn-default btn-lg">Visit Download Page</a>
+                    <h2>Contact Us</h2>
+                    <p>Feel free to email us to provide some feedback on our visualizations, or to just say hello!</p>
+                    <p><a href="mailto:feedback@startbootstrap.com">feedback@startbootstrap.com</a>
+                    </p>
+                    <ul class="list-inline banner-social-buttons">
+                        <li>
+                            <a href="https://twitter.com/SBootstrap" class="btn btn-default btn-lg"><i class="fa fa-twitter fa-fw"></i> <span class="network-name">Twitter</span></a>
+                        </li>
+                        <li>
+                            <a href="https://github.com/IronSummitMedia/startbootstrap" class="btn btn-default btn-lg"><i class="fa fa-github fa-fw"></i> <span class="network-name">Github</span></a>
+                        </li>
+                        <li>
+                            <a href="https://plus.google.com/+Startbootstrap/posts" class="btn btn-default btn-lg"><i class="fa fa-google-plus fa-fw"></i> <span class="network-name">Google+</span></a>
+                        </li>
+                    </ul>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Contact Section -->
-    <section id="contact" class="container content-section text-center">
-        <div class="row">
-            <div class="col-lg-8 col-lg-offset-2">
-                <h2>Contact Start Bootstrap</h2>
-                <p>Feel free to email us to provide some feedback on our templates, give us suggestions for new templates and themes, or to just say hello!</p>
-                <p><a href="mailto:feedback@startbootstrap.com">feedback@startbootstrap.com</a>
-                </p>
-                <ul class="list-inline banner-social-buttons">
-                    <li>
-                        <a href="https://twitter.com/SBootstrap" class="btn btn-default btn-lg"><i class="fa fa-twitter fa-fw"></i> <span class="network-name">Twitter</span></a>
-                    </li>
-                    <li>
-                        <a href="https://github.com/IronSummitMedia/startbootstrap" class="btn btn-default btn-lg"><i class="fa fa-github fa-fw"></i> <span class="network-name">Github</span></a>
-                    </li>
-                    <li>
-                        <a href="https://plus.google.com/+Startbootstrap/posts" class="btn btn-default btn-lg"><i class="fa fa-google-plus fa-fw"></i> <span class="network-name">Google+</span></a>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </section>
-
-    <!-- Map Section -->
-    <div id="map"></div>
-
     <!-- Footer -->
     <footer>
         <div class="container text-center">
-            <p>Copyright &copy; Your Website 2014</p>
+            <p>Copyright &copy; Crimson Words 2015</p>
         </div>
     </footer>
 
-    <!-- jQuery -->
-    <script src="js/jquery.js"></script>
-
-    <!-- Bootstrap Core JavaScript -->
-    <script src="js/bootstrap.min.js"></script>
 
     <!-- Plugin JavaScript -->
     <script src="js/jquery.easing.min.js"></script>

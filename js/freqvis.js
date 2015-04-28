@@ -1,9 +1,9 @@
-
-FreqVis = function(_parentElement, _data, _metaData, _eventHandler){
+FreqVis = function(_parentElement, _data, _metaData, _eventHandler, _eventHandler2){
     this.parentElement = _parentElement;
     this.data = _data;
     this.metaData = _metaData;
     this.eventHandler = _eventHandler;
+    this.eventHandler2 = _eventHandler2;
     this.displayData = [];
     this.originalData = [];
     this.currentWord = [];
@@ -32,53 +32,69 @@ FreqVis.prototype.initVis = function(){
     this.focus = this.svg.append("g")
         .attr("class", "focus")
         .attr("transform", "translate(" + this.margin.left + "," + this.margin.top + ")")
-        
+    
+    this.tip = d3.tip()
+      .attr('class', 'd3-tip')
+      .offset([-10, 0])
+      .style("opacity", 0)
+
     this.back = this.svg.append("g")
         .style("display", "none")
+
+    this.back.append("line")
+        .attr("class", "tool")
+        .style("stroke", "#CDEDF6")
+        .style("stroke-width", 5)
+        .style("opacity", 0.5)
+        .attr("y1", 0)
+        .attr("y2", this.height+10)
+        .attr("x1", 42)
+        .attr("x2", 42);
 
     this.back.append("circle")
         .attr("class", "y")   
         .attr("cx", 42)
-        .attr("cy", 10)       
-        .style("fill", "#00BBFF")
-        //.style("stroke", "blue")
-        .attr("r", 4)
+        .attr("cy", 10) //10      
+        .style("fill", "#CDEDF6")
+        .attr("r", 5) //5
 
-    this.back.append("line")
-        .attr("class", "tool")
-        .style("stroke", "#042A2B")
-        .style("stroke-dasharray", "3,3")
-        .style("opacity", 0.5)
-        .attr("y1", 0)
-        .attr("y2", this.height)
-        .attr("x1", 42)
-        .attr("x2", 42);
+    this.back.append("rect")
+        .attr("class", "y3")
+        .attr("x", 0)
+        .attr("y", 0)
+        .attr("height", 30)
+        .attr("width", 170)
+        .style("fill", "black")
+        .style("opacity", 0.8)
+        .style("border-radius", 10)
 
-    this.back.append("text")
+    /*this.back.append("text")
         .attr("class", "y3")
         .attr("x", 42)
         .style("stroke", "white")
         .style("stroke-width", "3.5px")
         .style("opacity", 0.8)
         .attr("dx", 8)
-        .attr("dy", "1em");
+        .attr("dy", "1em");*/
+
     this.back.append("text")
         .attr("class", "y4")
-        .attr("x", 42)
+        .attr("x", -10)
         .attr("dx", 8)
-        .attr("dy", "1em");
+        .attr("dy", "-1em")
+        .style("fill", "white");
 
     this.context = this.svg.append("g")
         .attr("class", "context")
         .attr("transform", "translate(" + this.margin2.left + "," + this.margin2.top + ")");
 
-
+/*
     this.svg.append("text")
         .attr("class", "title")
         .attr("x", (this.width / 2.2))             
         .attr("y", 20)
         .style("color", "#FF2B2B")
-        .text("Frequency of Words over Time");
+        .text("Frequency of Words over Time");*/
 
     // creates axis and scales
     this.x = d3.scale.linear()
@@ -116,6 +132,7 @@ FreqVis.prototype.initVis = function(){
 
 
     this.valueline = d3.svg.line()
+        .interpolate('linear')
         .x(function(d, i) { return that.x(i + 1700); })
         .y(function(d) {return that.y(d.count); });
 
@@ -164,7 +181,7 @@ FreqVis.prototype.initVis = function(){
       .x(this.x2)
       .on("brush", function(d) {
 
-        //$(that.eventHandler).trigger("selectionChanged", that.brush.extent());
+        $(that.eventHandler2).trigger("brushChanged", that.brush.extent());
         that.brushed(that.displayData, that.brush.extent());})
 
     // call the update method
@@ -219,7 +236,8 @@ FreqVis.prototype.updateVis = function(newdata, extent){
 
     this.y.domain([0, d3.max(allcounts.map(function(d){return d3.max(d)}))])
     this.y2.domain([0, d3.max(allcounts2.map(function(d){return d3.max(d)}))])
-
+    
+    this.svg.call(this.tip);
     // updates axis
     this.focus.select(".x.axis")
         .call(this.xAxis);
@@ -238,6 +256,7 @@ FreqVis.prototype.updateVis = function(newdata, extent){
 
     var path = this.focus.selectAll(".line")
       .data(this.displayData.map(function(d) {return d.inform}))
+
     
     path.enter()
       .append("path")
@@ -249,10 +268,31 @@ FreqVis.prototype.updateVis = function(newdata, extent){
       .attr("id", function(d, i) {
         return that.currentWord[i];})
       .on("click", function(d){
+        window.location.href = "/#percent";
         $(that.eventHandler).trigger("selectionChanged", this.id);
+
       })
-      .transition(3000)
-        .attr("d", this.valueline)
+
+    function draw(k) {
+        path
+            .attr('d',function(d) {
+              if (this.id == that.currentWord[that.currentWord.length-1]) {
+                return that.valueline(d.slice(0,k+1));}
+              else {return that.valueline(d);};
+            });
+    }
+    
+    var k=1, n = 315;
+    d3.timer( function() { 
+        draw(k);
+        if((k+=2) >= n-1) {
+            draw(n-1);
+            //next transitions
+            return true;
+        }
+    })
+
+
 
 
     var path2 = this.context.selectAll(".line")
@@ -278,16 +318,16 @@ FreqVis.prototype.updateVis = function(newdata, extent){
               return this.innerHTML == selected;
             })
             .style("opacity", 1)
-            .style("color", "#FF2B2B");
+            .style("color", "#F0C808");
 
-          d3.selectAll(".focus .line")
+          /*d3.selectAll(".focus .line")
             .style("opacity", 0.35)
             .filter(function(p) { 
               return this.id == selected;
             })
             .style("opacity", 1)
-            .style("stroke", "#FF2B2B")
-            .style("stroke-width", 1.5);
+            .style("stroke", "#F0C808")
+            .style("stroke-width", 2.5);*/
 
       })
       .on("mouseout", function(d,i) {
@@ -309,6 +349,12 @@ FreqVis.prototype.updateVis = function(newdata, extent){
         .on("mousemove", function() {
             mousemove(this, that, this.selectword)
         }); 
+
+      this.tip
+        .html(function(d) {
+          return "<strong>" + d + "</strong>";
+      })
+
 
     path.exit()
       .remove();

@@ -24,14 +24,14 @@ topWordsVis.prototype.initVis = function(){
             .attr("width", this.width + this.margin.left + this.margin.right)
             .attr("height", this.height + this.margin.top + this.margin.bottom)
 
-    this.svg.append("g")
+    /*this.svg.append("g")
         .append("text")
         .attr("class", "title")
         .text("Top 10 Words of Selected Period")
         .attr("x", this.width/4)
-        .attr("y", 20)
+        .attr("y", 20)*/
     this.svg=this.svg.append("g")
-        .attr("transform", "translate(" + this.margin.left + "," + this.margin.top + ")");;
+        .attr("transform", "translate(" + this.margin.left + "," + this.margin.top + ")");
 
     this.wrangleData(null);
 
@@ -69,7 +69,7 @@ topWordsVis.prototype.wrangleData= function(_filterFunction){
 }
 
 topWordsVis.prototype.updateVis = function(){
-
+    
     this.y.domain(this.displayData.map(function(d,i){
         return d.word}))
 
@@ -115,7 +115,7 @@ topWordsVis.prototype.updateVis = function(){
 
 }
 
-topWordsVis.prototype.onSelectionChange= function (selectionStart, selectionEnd){
+topWordsVis.prototype.onBrushChange= function (selectionStart, selectionEnd){
 
     var filter = function (d,i){
         return i>=(d3.round(selectionStart)-1700) && i<=(d3.round(selectionEnd)-1700)

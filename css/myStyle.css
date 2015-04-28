@@ -1,17 +1,23 @@
-body{
-    font-family: 'PT Sans', sans-serif;
-}
 .axis text {
     font: 10px sans-serif;
 }
 
-.axis line,
-.axis path {
+.axis path,
+.axis line {
     fill: none;
-    stroke: #000;
+    stroke: white;
+    stroke-width: 2px;
     shape-rendering: crispEdges;
 }
 
+.axis text {
+    fill: white;
+    font-size: 11px;
+    font-family: Montserrat,"Helvetica Neue",Helvetica,Arial,sans-serif;
+}
+.title {
+    fill: white;
+}
 .boundingBox{
     cursor: pointer;
     fill: grey;
@@ -74,7 +80,8 @@ body{
 }
 .line {
   fill: none;
-  stroke: darkgrey;
+  stroke: white;
+  stroke-width: 2px;
 
 }
 /* div container containing the form  */
@@ -150,7 +157,7 @@ body{
 
 .trial {
   margin: 0;
-  background: #fff;
+
   min-width: 960px;
 }
 
@@ -163,3 +170,8 @@ circle {
   fill: none;
   stroke-width: 2.5px;
 }
+
+.y4 text{
+  fill: #F0C808;
+}
+
