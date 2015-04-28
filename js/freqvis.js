@@ -8,7 +8,7 @@ FreqVis = function(_parentElement, _data, _metaData, _eventHandler){
     this.originalData = [];
     this.currentWord = [];
     this.selectword = "";
-    this.difference = 0;
+    // this.difference = 0;
 
     // TODO: define all "constants" here
     this.margin = {top: 10, right: 10, bottom: 100, left: 40};
@@ -21,6 +21,7 @@ FreqVis = function(_parentElement, _data, _metaData, _eventHandler){
 }
 
 FreqVis.prototype.initVis = function(){
+    
 
     var that = this;
 
@@ -138,7 +139,6 @@ FreqVis.prototype.initVis = function(){
         .style("text-anchor", "end")
         .text("Number of articles, yearly")
 
-
     
     this.focus.append("rect")   
         .attr("class", "background")          
@@ -164,7 +164,7 @@ FreqVis.prototype.initVis = function(){
       .x(this.x2)
       .on("brush", function(d) {
 
-        $(that.eventHandler).trigger("selectionChanged", that.brush.extent());
+        //$(that.eventHandler).trigger("selectionChanged", that.brush.extent());
         that.brushed(that.displayData, that.brush.extent());})
 
     // call the update method
@@ -242,13 +242,18 @@ FreqVis.prototype.updateVis = function(newdata, extent){
     path.enter()
       .append("path")
       .attr("class", "line")
+      
       //.attr("transform", "translate(100,0)");
 
     path
       .attr("id", function(d, i) {
         return that.currentWord[i];})
+      .on("click", function(d){
+        $(that.eventHandler).trigger("selectionChanged", this.id);
+      })
       .transition(3000)
         .attr("d", this.valueline)
+
 
     var path2 = this.context.selectAll(".line")
       .data(this.originalData.map(function(d) {return d.inform}))
@@ -262,27 +267,27 @@ FreqVis.prototype.updateVis = function(newdata, extent){
       .attr("d", this.valueline2);
 
     this.focus.selectAll(".line")
-        .on("mouseover", function(d,i) {
-        var selected = this.id;
-        
-        that.selectword = this.id;
-        d3.selectAll(".word")
-          .style("opacity", 0.35)
-          .filter(function(p) { 
-            
-            return this.innerHTML == selected;
-          })
-          .style("opacity", 1)
-          .style("color", "#FF2B2B");
+      .on("mouseover", function(d,i) {
 
-        d3.selectAll(".focus .line")
-          .style("opacity", 0.35)
-          .filter(function(p) { 
-            return this.id == selected;
-          })
-          .style("opacity", 1)
-          .style("stroke", "#FF2B2B")
-          .style("stroke-width", 1.5);
+          var selected = this.id;
+          
+          that.selectword = this.id;
+          d3.selectAll(".word")
+            .style("opacity", 0.35)
+            .filter(function(p) { 
+              return this.innerHTML == selected;
+            })
+            .style("opacity", 1)
+            .style("color", "#FF2B2B");
+
+          d3.selectAll(".focus .line")
+            .style("opacity", 0.35)
+            .filter(function(p) { 
+              return this.id == selected;
+            })
+            .style("opacity", 1)
+            .style("stroke", "#FF2B2B")
+            .style("stroke-width", 1.5);
 
       })
       .on("mouseout", function(d,i) {
@@ -302,7 +307,7 @@ FreqVis.prototype.updateVis = function(newdata, extent){
         .on("mouseover", function() { that.back.style("display", null); })
         .on("mouseout", function() { that.back.style("display", "none"); })
         .on("mousemove", function() {
-            mousemove(this, that)
+            mousemove(this, that, this.selectword)
         }); 
 
     path.exit()

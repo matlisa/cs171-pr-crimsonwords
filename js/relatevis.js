@@ -4,7 +4,7 @@ PrioVis = function(_parentElement, _data, _metaData){
     this.data = _data;
     this.metaData = _metaData;
     this.displayData = [];
-    this.currentWord = ["education"];
+    this.currentWord = [];
 
     // TODO: define all constants here
     this.margin = {top: 20, right: 20, bottom: 30, left: 0},
@@ -12,6 +12,7 @@ PrioVis = function(_parentElement, _data, _metaData){
     this.height = 400 - this.margin.top - this.margin.bottom;
 
     this.initVis();
+    
 }
 
 PrioVis.prototype.initVis = function(){
@@ -21,19 +22,6 @@ PrioVis.prototype.initVis = function(){
       .range([0, this.width])
 
     var that = this;
-
-    this.selectedData = this.data.filter(function(d){ return that.currentWord.indexOf(d.word) != -1});
-
-    this.displayData =this.selectedData[0]["inform"].map(function(d,i){
-        if (i == 0){
-            return d.count
-        }
-        else{
-            return d.count - that.selectedData[0]["inform"][i-1]["count"]
-        }
-    })
-
-    that = this;
 
     this.xAxis = d3.svg.axis()
       .scale(this.x)
@@ -111,17 +99,9 @@ PrioVis.prototype.initVis = function(){
 }
 
 PrioVis.prototype.wrangleData= function(_filterFunction, start, end){
-    
-}
+    var that =this;
 
-PrioVis.prototype.updateVis = function(view){
-
-}
-
-PrioVis.prototype.wordFilter = function(currentWord){
-        this.currentWord = [currentWord];
-            this.selectedData = this.data.filter(function(d){ return that.currentWord.indexOf(d.word) != -1});
-console.log(this.selectedData)
+    this.selectedData = this.data.filter(function(d){ return that.currentWord.indexOf(d.word) != -1});
 
     this.displayData =this.selectedData[0]["inform"].map(function(d,i){
         if (i == 0){
@@ -132,14 +112,17 @@ console.log(this.selectedData)
         }
     })
 
+}
+
+PrioVis.prototype.updateVis = function(view){
 
 }
 
-PrioVis.prototype.onSelectionChange= function (selectionStart, selectionEnd){
-    
+PrioVis.prototype.onSelectionChange= function (new_word){
+    this.currentWord=[new_word];
+    this.wrangleData();
+
+    this.svg.select(".title")
+        .text("Percent Change over Time for the Word: " + new_word);
 }
 
-
-PrioVis.prototype.filterAndAggregate = function(_filter, start, end){
-
-}

@@ -86,7 +86,7 @@
             var metaData = {};
 
             var freq_vis;
-            var prio_vis;
+            var relate_vis;
 
             dateFormatter = d3.time.format("%Y-%m-%d %H:%M:%S");
             dateFormat = d3.time.format("%Y");
@@ -96,11 +96,18 @@
                 var MyEventHandler = new Object();
 
                 freq_vis = new FreqVis(d3.select("#freqVis"), allData, metaData, MyEventHandler);
-                prio_vis = new PrioVis(d3.select("#relateVis"), allData, metaData, MyEventHandler);
+
+                // initialize graph
+                if (freq_vis.currentWord) {
+                    var div = document.getElementById('word1');
+                    div.innerHTML = freq_vis.currentWord;
+                }
+
+                relate_vis = new PrioVis(d3.select("#relateVis"), allData, metaData, MyEventHandler);
 
                 var topwords_vis = new topWordsVis(d3.select("#topWordsVis"), allData, metaData, MyEventHandler);
 
-                $(MyEventHandler).bind("selectionChanged", function(event, data1, data2){topwords_vis.onSelectionChange(data1,data2)})
+                $(MyEventHandler).bind("selectionChanged", function(event, data1){relate_vis.onSelectionChange(data1)})
             }
 
             // call this function after both files are loaded -- error should be "null" if no error
@@ -123,8 +130,10 @@
                                 return key;
                     })
 
-                    var addgraph = function() {
-                        var word = document.getElementById('tags').value;
+                    var addgraph = function(word) {
+                        if (!word) {
+                            word = document.getElementById('tags').value;
+                        }
                         if (freq_vis.currentWord.indexOf(word) == -1) {
                             freq_vis.currentWord.push(word);
 
@@ -172,6 +181,7 @@
                     }
                     
                     initVis();
+                    //addgraph("Harvard");
 
                     var allWords = allData.map(function(d) {
                         return d.word;
@@ -180,6 +190,8 @@
                     $( "#tags" ).autocomplete({
                       source: allWords
                     });
+
+                    
 
                     $("form").submit(function (e) {
                         if (freq_vis.currentWord.length < 3) {
@@ -252,13 +264,14 @@
         return newdata;
 
     }
-    var mousemove = function(object, countvis) {      
+    var mousemove = function(object, countvis, word) {      
 
                        
         if (object) {
-            
+            var y0;
             var x0 = d3.round(countvis.x.invert(d3.mouse(object)[0]))
-
+            
+            console.log(countvis.selectword, word)
 
             var found = countvis.originalData.filter(function(d, i) {
                 
@@ -266,14 +279,14 @@
 
             })
 
+            console.log(countvis.originalData)
             if (found[0]) {
-                var y0 = found[0].inform[x0-1700].count
+                y0 = found[0].inform[x0-1700].count
             }
             else {
-                var y0 = countvis.originalData[0].inform[x0-1700].count
+                y0 = countvis.originalData[0].inform[x0-1700].count
             }
 
-            console.log("diff", countvis.difference)
             countvis.back.select("circle.y")                           
                 .attr("transform",
                       "translate(" + (countvis.x(x0)) +"," +      
