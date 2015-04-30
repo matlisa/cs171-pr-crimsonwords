@@ -68,10 +68,12 @@ PrioVis.prototype.initVis = function(){
             .attr("r", 1e-6)
             .style("stroke", function(d, i){
                 if (d < 0)
-                    {return "#FFFF00"} 
+                    {return "#FFF"} 
                 else 
-                    {return "#00FFFF"}})
+                    {return "#00BFFF"}})
             .style("stroke-opacity", 1)
+            .style("fill", "none")
+
         .transition()
             .duration(2000)
             .delay(function(d, i) { return i * 10; })
@@ -89,6 +91,7 @@ PrioVis.prototype.initVis = function(){
                     {return d+10}
               })
               .style("stroke-opacity", 1e-6)
+              .style("fill", "none")
               .remove()
           })();
         }

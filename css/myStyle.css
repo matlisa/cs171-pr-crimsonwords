@@ -50,6 +50,7 @@
   fill: #fff;
   stroke: darkgrey;
 }
+
 .d3-tip {
   line-height: 1;
   font-weight: bold;
@@ -166,12 +167,23 @@
   pointer-events: all;
 }
 
-circle {
-  fill: none;
-  stroke-width: 2.5px;
-}
-
 .y4 text{
   fill: #F0C808;
 }
+.node.fixed {
+  fill: #000;
+}
+.work text {
+  font-family: Montserrat,"Helvetica Neue",Helvetica,Arial,sans-serif;
+  fill: white;
+  text-align: center;
+}
 
+.change {
+  stroke-width: 2;
+}
+p.intro-text {
+    padding-right: 180px;
+    padding-bottom: 25px;
+    padding-left: 180px;
+}

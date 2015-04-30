@@ -16,7 +16,7 @@ html {
     width: 100%;
     height: 100%;
 }
-
+ 
 h1,
 h2,
 h3,
@@ -147,13 +147,14 @@ a:focus {
     padding: 100px 0;
     text-align: center;
     color: #fff;
-    background: url(../img/intro-bg2.jpg) no-repeat bottom center scroll;
-    background-color: #000;
+    background: url(../img/background5.png) no-repeat bottom center scroll;
+    /*background-color: #000;*/
     -webkit-background-size: cover;
     -moz-background-size: cover;
     background-size: cover;
     -o-background-size: cover;
 }
+
 
 .intro .intro-body {
     display: table-cell;
@@ -165,6 +166,7 @@ a:focus {
 }
 
 .intro .intro-body .intro-text {
+    padding-top: 80px;
     font-size: 18px;
 }
 
@@ -316,7 +318,7 @@ a:focus {
     border: 1px solid #BEB7A4;
     outline: 0;
     color: #000;
-    background-color: #BEB7A4;
+    background-color: #;
 }
 
 ul.banner-social-buttons {

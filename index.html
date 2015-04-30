@@ -49,11 +49,13 @@
 
 
 
+    <script src = "js/about.js?ver=2"></script>
+
     <script src = "js/freqvis.js?ver=2"></script>
-    <script src = "js/relatevis.js?ver=1"></script>
+    <script src = "js/relatevis.js?ver=2"></script>
     <script src = "js/topwordsvis.js?ver=1"></script>
     <!-- add own stylesheet-->
-    <link rel="stylesheet" type="text/css" href="css/myStyle.css?ver=1">
+    <link rel="stylesheet" type="text/css" href="css/myStyle.css?ver=5">
 
 </head>
 
@@ -97,24 +99,24 @@
     <!-- Intro Header -->
     <header class="intro">
         <div class="intro-body">
-            <div class="container">
-                <div class="row">
-                    <div class="col-md-8 col-md-offset-2">
-                        <h1 class="brand-heading">Crimson Words</h1>
-                        <p class="intro-text">A time-serialized visualization of word appearances in Harvard&#39;s student publication, The Crimson.</p>
-                        <a href="#about" class="btn btn-circle page-scroll">
-                            <i class="fa fa-angle-double-down animated"></i>
-                        </a>
-                    </div>
+            <div class = "row">
+                <div class="col-md-8 col-md-offset-2" id="aboutVis">
                 </div>
             </div>
+                <h1 class="brand-heading">Words</h1>
+                <span id = "instructions">Complete the word. Double-clicking unfixes the nodes.</span><br>
+                <input class="btn btn-default" id="ready" type="submit" value="Ready?"/>
+                <p class="intro-text" style = "padding-top: 20px">A time-serialized visualization of word appearances in Harvard&#39;s student publication, The Crimson.</p>
+                <a href="#about" class="btn btn-circle page-scroll">
+                <i class="fa fa-angle-double-down animated"></i>
+                </a>
         </div>
     </header>
 
     <!-- About Section -->
     <section id="about" class="container content-section text-center">
         <div class="row">
-            <div class="col-lg-8 col-lg-offset-2">
+            <div class="col-lg-8 col-lg-offset-2" >
                 <h2>About Crimson Words</h2>
                 <p>A dynamic data visualization of <em>The Crimson</em> articles over the span of the organization's history. Presented and created by Kim Soffen, Lisa Ma, and Jimmy Lin.</p>
                 <a href="#vis" class="btn btn-circle page-scroll">
@@ -128,14 +130,15 @@
     <section id="vis" class="container content-section text-center">
         <p id = "abovevis"></p>
         <br>
-        <div id = "addword" class="ui-widget">
-            <form onsubmit="return false" class="form-inline">
+        <div class="ui-widget">
+            <form onsubmit="return false" class="form-inline" id = "addword" >
             <label for="tags">Enter Word: </label>
             <input class="form-control" id="tags" name = "input" type="text" />
             <input class="btn btn-default" id="submits" name="submit" type="submit" value="Add" onclick = "appear(); "/>
             </form>
         </div>
         <br>
+
         <div class="row">
             <b>Current Time Interval: </b><span id="brushInfo"></span>
             <b>Current Words:</b> 
@@ -152,10 +155,11 @@
                 <b>Top 10 Words of Selected Period</b>
             </div>
         </div>
-        <p id = "percent"></p>
         <br>
+
         <div class="row" >
-            <div class="col-lg-12 col-lg-offset-2" id="relateVis">
+        <p id = "percent"></p>
+            <div class="col-md-12" id="relateVis">
                 <b>Percent Change over Time</b><span id="changeInfo"></span>
             </div>
         </div>
@@ -167,12 +171,24 @@
         $(function(){
             document.getElementById("vis").style.visibility = "hidden";
             document.getElementById("addword").style.visibility = "visible";
+            document.getElementById("instructions").style.visibility = "hidden";
+            d3.select("#ready").on("mouseover", function() {
+
+                d3.select("#instructions").style("visibility","visible");
+            })
+            d3.select("#ready").on("mouseout", function() {
+
+                d3.select("#instructions").style("visibility","hidden");
+            })
 
             var allData = [];
             var metaData = {};
+            var allWords = [];
+            var connectData = [];
 
             var freq_vis;
             var relate_vis;
+            var about_vis;
 
             dateFormatter = d3.time.format("%Y-%m-%d %H:%M:%S");
             dateFormat = d3.time.format("%Y");
@@ -181,6 +197,8 @@
 
                 var MyEventHandler = new Object();
                 var MyEventHandler2 = new Object();
+
+                about_vis = new AboutVis(d3.select("#aboutVis"), allData, metaData, allWords, MyEventHandler);
 
                 freq_vis = new FreqVis(d3.select("#freqVis"), allData, metaData, MyEventHandler, MyEventHandler2);
 
@@ -205,7 +223,8 @@
             }
 
             // call this function after both files are loaded -- error should be "null" if no error
-            var dataLoaded = function (error, _allData, meh) {
+            var dataLoaded = function (error, _allData, _connectData) {
+
                 if (!error) {
 
                     allData = _allData.map(function(d) { 
@@ -223,6 +242,9 @@
 
                                 return key;
                     })
+
+                    connectData = _connectData;
+
 
                     var addgraph = function(word) {
                         if (!word) {
@@ -273,11 +295,30 @@
                         object.innerHTML = "";
 
                     }
+
+                    var changeimg = function() {
+                        var allnodes = d3.selectAll(".node.fixed");
+
+                        if (allnodes[0].length == 9) {
+                            $(".intro").stop().animate({opacity: 0},300,function(){
+                                $(this).css({'background': "url(../img/background6.png) no-repeat bottom center scroll"})
+                                           .animate({opacity: 1},{duration:1300});
+                             });
+
+                            about_vis.node.remove();
+                            about_vis.link.remove();
+
+                            document.getElementById("ready").style.visibility = "hidden";
+                            
+                        }
+                        else {document.getElementById("ready").value = "Try Again"}
+                        
+                    }
                     
                     initVis();
                     //addgraph("Harvard");
 
-                    var allWords = allData.map(function(d) {
+                    allWords = allData.map(function(d) {
                         return d.word;
                     });
 
@@ -285,9 +326,12 @@
                       source: allWords
                     });
 
+                    $("#ready").on("click", function() {
+                        changeimg();
+                    })
                     
-
                     $("form").submit(function (e) {
+
                         if (freq_vis.currentWord.length < 3) {
                             addgraph();
                         }
@@ -314,7 +358,7 @@
                      
                     })
                     d3.selectAll('.word').on("mouseout", function() {
-                        d3.selectAll(".line")
+                        d3.selectAll(".focus .line")
                           .style("opacity", 1)
                           .style("stroke", null)
                           .style("stroke-width", null);
@@ -330,7 +374,9 @@
 
                 queue()
                     .defer(d3.json, "data/sample.json")
-                    .await( function (error, rawData) { dataLoaded(error, rawData); } );;
+                    .defer(d3.json, "data/miserables.json")
+                    .await( function (error, rawData, connectData) { dataLoaded(error, rawData, connectData); } );;
+                
                 d3.select("#fitInBtn").on("click", function() {
                 });
 
@@ -345,19 +391,7 @@
 
         return parseInt(style.getPropertyValue('width'));
     }
-    var filterdates = function(data, from, to) {
-        var filtered = [];
-        var newdata = [];
-        data.forEach(function(d, j){
-            filtered[j] = d.inform.filter(function(dd, i) {
-                return ((i+1700) >= from && (i+1700) <= to); })
-            
-            newdata[j] = {"word": d.word, "inform": filtered[j]}
-        });
 
-        return newdata;
-
-    }
     var mousemove = function(object, countvis, word) {      
 
                        
@@ -400,12 +434,12 @@
 
 
     }   
-
        
     var appear = function() {
         document.getElementById("vis").style.visibility = "visible";
         window.location.href = "#abovevis";
     }
+
 
     </script>
 
