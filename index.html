@@ -374,7 +374,6 @@
 
                 queue()
                     .defer(d3.json, "data/sample.json")
-                    .defer(d3.json, "data/miserables.json")
                     .await( function (error, rawData, connectData) { dataLoaded(error, rawData, connectData); } );;
                 
                 d3.select("#fitInBtn").on("click", function() {
