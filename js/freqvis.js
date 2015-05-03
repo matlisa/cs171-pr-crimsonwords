@@ -199,7 +199,7 @@ FreqVis.prototype.wrangleData= function(){
 }
 
 FreqVis.prototype.updateVis = function(newdata, extent){
-    
+
 
     if (newdata) {
         this.displayData = newdata;
@@ -267,6 +267,7 @@ FreqVis.prototype.updateVis = function(newdata, extent){
 
     path
       .attr("id", function(d, i) {
+        console.log("path", i)
         return that.currentWord[i];})
       .on("click", function(d){
         window.location.href = "#percent";
@@ -311,7 +312,7 @@ FreqVis.prototype.updateVis = function(newdata, extent){
       .on("mouseover", function(d,i) {
 
           var selected = this.id;
-          
+          console.log(this.id)
           that.selectword = this.id;
           d3.selectAll(".word")
             .style("opacity", 0.35)
