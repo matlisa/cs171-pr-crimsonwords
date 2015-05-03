@@ -273,6 +273,8 @@
                                 var div = document.getElementById('word3');
                                 div.innerHTML = word;
                             }
+
+                            console.log("addgraph", document.getElementById('word1'), document.getElementById('word2'),document.getElementById('word3'),d3.selectAll(".focus .line"), freq_vis.currentWord)
                         
                         }
                         document.getElementById('tags').value = "";
@@ -280,19 +282,49 @@
 
                     var deletegraph = function(object) {
                         var index = freq_vis.currentWord.indexOf(object.innerHTML);
+                        console.log(index)
                         if (index > -1) {
                             freq_vis.currentWord.splice(index, 1);
-
                         }
+                        var div1 = document.getElementById('word1');
+                        var div2 = document.getElementById('word2');
+                        var div3 = document.getElementById('word3');
 
+                        
                         freq_vis.wrangleData();
                         var extent = freq_vis.brush.extent();
                         if (extent[0] != extent[1]) {
                             freq_vis.displayData = filterdates(freq_vis.displayData, d3.round(extent[0]), d3.round(extent[1]));
                         }
+
+                        if (freq_vis.currentWord[0]) {
+                            console.log("word1", freq_vis.currentWord[0])
+                            div1.innerHTML = freq_vis.currentWord[0];
+                        }
+                        else {
+                            div1.innerHTML = "";
+                            div2.innerHTML = "";
+                            div3.innerHTML = "";
+                        }
+                        if (freq_vis.currentWord[1]) {
+                            console.log("word2",freq_vis.currentWord[1] )
+                            div2.innerHTML = freq_vis.currentWord[1];
+                        }
+                        else {
+                            div2.innerHTML = "";
+                            div3.innerHTML = "";
+                        }
+                        if (freq_vis.currentWord[2]) {
+                            
+                            div3.innerHTML = freq_vis.currentWord[2];
+                        }
+                        else {
+                            div3.innerHTML = "";
+                        }
+                        
                         freq_vis.updateVis(freq_vis.displayData, freq_vis.brush.extent());
                        
-                        object.innerHTML = "";
+                        //object.innerHTML = "";
 
                     }
 
@@ -301,7 +333,7 @@
 
                         if (allnodes[0].length == 9) {
                             $(".intro").stop().animate({opacity: 0},300,function(){
-                                $(this).css({'background': "https://github.com/matlisa/cs171-pr-crimsonwords/blob/gh-pages/img/background6.png?raw=true no-repeat bottom center scroll"})
+                                $(this).css({'background': "url(http://matlisa.github.io/cs171-pr-crimsonwords/img/background6.png) no-repeat bottom center scroll"})
                                            .animate({opacity: 1},{duration:1300});
                              });
 
@@ -331,11 +363,13 @@
                     })
                     
                     $("form").submit(function (e) {
-
-                        if (freq_vis.currentWord.length < 3) {
-                            addgraph();
+                        var word = document.getElementById('tags').value;
+                        if (freq_vis.currentWord.length < 3 
+                            && allWords.indexOf(word) > -1
+                            && freq_vis.currentWord.indexOf(word) == -1) {
+                            addgraph(word);
                         }
-                        else {
+                        else if (freq_vis.currentWord.length >= 3 ) {
                             alert("Maximum number of words displayed. Please remove one of your selections by clicking on the word.")
                         }
                     });
@@ -390,6 +424,20 @@
 
         return parseInt(style.getPropertyValue('width'));
     }
+    var filterdates = function(data, from, to) {
+        var filtered = [];
+        var newdata = [];
+        data.forEach(function(d, j){
+            filtered[j] = d.inform.filter(function(dd, i) {
+                return ((i+1700) >= from && (i+1700) <= to); })
+            
+            newdata[j] = {"word": d.word, "inform": filtered[j]}
+        });
+
+        return newdata;
+
+    }
+
 
     var mousemove = function(object, countvis, word) {      
 
@@ -446,8 +494,8 @@
 
 
 
-    <!-- Download Section -->
-    <section id="download" class="content-section text-center">
+    <!-- Contact Section -->
+    <section id="contact" class="content-section text-center">
         <div class="download-section">
             <div class="container">
                 <div class="col-lg-8 col-lg-offset-2">

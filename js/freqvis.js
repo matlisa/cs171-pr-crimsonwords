@@ -199,6 +199,7 @@ FreqVis.prototype.wrangleData= function(){
 }
 
 FreqVis.prototype.updateVis = function(newdata, extent){
+    
 
     if (newdata) {
         this.displayData = newdata;
