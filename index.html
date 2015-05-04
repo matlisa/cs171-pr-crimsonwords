@@ -30,7 +30,7 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
 
     <!-- Custom CSS -->
-    <link href="css/grayscale.css?ver=1" rel="stylesheet">
+    <link href="css/grayscale.css?ver=2" rel="stylesheet">
 
     <!-- Custom Fonts -->
     <link href="font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
@@ -49,14 +49,14 @@
 
 
 
-    <script src = "js/about.js?ver=2"></script>
+    <script src = "js/about.js?ver=1"></script>
 
     <script src = "js/freqvis.js?ver=1"></script>
-    <script src = "js/changevis.js?ver=1"></script>
+    <script src = "js/changevis.js?ver=2"></script>
     <script src = "js/relatevis.js?ver=1"></script>
     <script src = "js/topwordsvis.js?ver=1"></script>
     <!-- add own stylesheet-->
-    <link rel="stylesheet" type="text/css" href="css/myStyle.css?ver=5">
+    <link rel="stylesheet" type="text/css" href="css/myStyle.css?ver=2">
 
 </head>
 
@@ -169,24 +169,25 @@
         <p id = "percentguide">Click anywhere on the graph to start the animation!</p>
 
         <div class="row" >
-        <p id = "percent"></p>
-            <div class="col-md-12" id="relateVis">
-                <b>Word Relations</b>
-            </div>
+        <p id = "association"></p>
             <div>
                 <strong>Force Layout: </strong>
                 <label><input type="radio" name="map" value="on" checked = "checked" id = "force">On</label>
                 <label><input type="radio" name="map" value="reset">Reset</label>
             </div>
-            <div class="row" >
+            <div>
                 <strong>Time Update:</strong>
-                <label id = "min_time">1882</label><input type="range" name="years" min="0" max="132" step="1" value="0" id="slider-time" oninput=";"><label id = "max_time">2014</label>
+                <label id = "min_time">2000</label><input type="range" name="years" min="0" max="10" step="5" value="0" id="slider-time" oninput=";"><label id = "max_time">2010</label>
             </div>
             <div>
                 <strong>Link Distance: </strong>
                 <label><input type="radio" name="dist" value="not_weighted" checked = "checked" id = "not_weighted">Not Weighted</label>
                 <label><input type="radio" name="dist" value="weighted" id = "weighted">Weighted by Association</label>
             </div>
+            <div class="col-md-12" id="relateVis">
+                <b>Word Relations</b>
+            </div>
+            
         </div>
 
      </section>
@@ -563,7 +564,7 @@
         <div class="download-section">
             <div class="container">
                 <div class="col-lg-8 col-lg-offset-2">
-                    <h2>Contact Us</h2>
+                    <h2>Thank You!</h2>
                     <p>Feel free to email us to provide some feedback on our visualizations, or to just say hello!</p>
                     <p><a href="mailto:feedback@startbootstrap.com">feedback@startbootstrap.com</a>
                     </p>

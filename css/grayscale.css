@@ -166,7 +166,7 @@ a:focus {
 }
 
 .intro .intro-body .intro-text {
-    padding-top: 80px;
+
     font-size: 18px;
 }
 
@@ -268,7 +268,7 @@ a:focus {
     width: 100%;
     padding: 50px 0;
     color: #fff;
-    background: url(../img/downloads-bg1.jpg) no-repeat center center scroll;
+    background: url(../img/intro-bg2.jpg) no-repeat center center scroll;
     background-color: #000;
     -webkit-background-size: cover;
     -moz-background-size: cover;

@@ -114,14 +114,14 @@ AboutVis.prototype.initVis = function(){
     var all_data = {"nodes":alphabet, "links":alphabet_links};
 
 
-    this.link = this.svg.selectAll(".link")
+    this.link = this.svg.selectAll(".link2")
         .data(all_data.links)
 
     this.link
         .enter().append("line")
 
     this.link
-        .attr("class", "link")
+        .attr("class", "link2")
         .attr("stroke", function(d) {
             var need_target = [1, 2, 5, 6, 9, 10, 11, 12, 16, 19, 22, 24, 25, 29, 30, 34, 36, 37, 38, 39, 40, 41, 43, 46];
             var need_source = [0, 1, 5, 6, 7, 9, 14, 21, 24, 27, 28, 29, 36, 37, 38, 39, 40, 41, 42, 45, 48];

@@ -187,3 +187,10 @@ p.intro-text {
     padding-bottom: 25px;
     padding-left: 180px;
 }
+.link {
+  stroke: #000;
+  stroke-opacity: 1;
+}
+#slider-time{
+  width: 100%;
+}

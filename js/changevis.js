@@ -69,8 +69,10 @@ ChangeVis.prototype.initVis = function(){
             .style("stroke", function(d, i){
                 if (d < 0)
                     {return "#FFF"} 
-                else 
-                    {return "#00BFFF"}})
+                else if (d > 0)
+                    {return "#00BFFF"}
+                else return "red";
+            })
             .style("stroke-opacity", 1)
             .style("fill", "none")
 
