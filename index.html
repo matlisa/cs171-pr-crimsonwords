@@ -235,7 +235,7 @@
                 var topwords_vis = new topWordsVis(d3.select("#topWordsVis"), allData, metaData, MyEventHandler2);
 
                 $(MyEventHandler).bind("selectionChanged", function(event, data1){
-                    relate_vis.onSelectionChange(data1)
+                    change_vis.onSelectionChange(data1)
                 })
 
                 $(MyEventHandler2).bind("brushChanged", function(event, d, e){
@@ -250,11 +250,15 @@
                 if (!error) {
 
                     allData = _allData.map(function(d) { 
-                                var res=d3.range(0,315).map(function(e,i) {
+                                var res=d3.range(0,132).map(function(e,i) {
                                     
                                     return {count:0, link:"" };});
                                 d.count.map(function(dd, i) {
-                                    res[parseInt(dd.web_publish_date.substring(0, 4))-1700].count += 1;
+                                    var index=parseInt(dd.web_publish_date.substring(0, 4))-1882;
+                                    index = d3.max([index, 0]);
+                                    index = d3.min([index, 131]);
+                                    // console.log(index)
+                                    res[index].count += 1;
                                     
                                 })
                                 var key = {
@@ -487,7 +491,7 @@
         var newdata = [];
         data.forEach(function(d, j){
             filtered[j] = d.inform.filter(function(dd, i) {
-                return ((i+1700) >= from && (i+1700) <= to); })
+                return ((i+1882) >= from && (i+1882) <= to); })
             
             newdata[j] = {"word": d.word, "inform": filtered[j]}
         });
@@ -510,10 +514,10 @@
             })
 
             if (found[0]) {
-                y0 = found[0].inform[x0-1700].count
+                y0 = found[0].inform[x0-1882].count
             }
             else {
-                y0 = countvis.originalData[0].inform[x0-1700].count
+                y0 = countvis.originalData[0].inform[x0-1882].count
             }
 
             countvis.back.select("circle.y")                           
@@ -524,11 +528,11 @@
                 .attr("transform",
                         "translate(" + (countvis.x(x0)) +"," + 
                                      "0)");
-            countvis.back.select("text.y4")
+            var hi = countvis.back.select("text.y4")
                 .attr("transform",
                       "translate(" + (countvis.x(x0)) +"," + 
                                      countvis.y(y0) + ")")
-                .text("Year: " + x0 + ",\n Count: " +y0);
+                .html("Year: " + x0 + ", <br/> Count: " +y0);
 
             countvis.back.select("rect.y3")
                 .attr("x", countvis.x(x0)-20)

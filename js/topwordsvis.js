@@ -118,9 +118,9 @@ topWordsVis.prototype.updateVis = function(){
 topWordsVis.prototype.onBrushChange= function (selectionStart, selectionEnd){
 
     var filter = function (d,i){
-        return i>=(d3.round(selectionStart)-1700) && i<=(d3.round(selectionEnd)-1700)
+        return i>=(d3.round(selectionStart)-1882) && i<=(d3.round(selectionEnd)-1882)
     };
-var test = d3.range(315).map(function(d, i){return i})
+var test = d3.range(132).map(function(d, i){return i})
 
     this.wrangleData(filter);
 
