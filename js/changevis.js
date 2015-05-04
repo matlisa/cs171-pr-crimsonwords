@@ -18,7 +18,7 @@ ChangeVis = function(_parentElement, _data, _metaData){
 ChangeVis.prototype.initVis = function(){
 
     this.x = d3.scale.linear()
-      .domain([1700, 2014])
+      .domain([1882, 2014])
       .range([0, this.width])
 
     var that = this;
@@ -63,7 +63,7 @@ ChangeVis.prototype.initVis = function(){
             //.insert("circle", "rect")
             .attr("class", "change")
             .attr("cx", function(d, i) { 
-                return that.x(i+1700)})
+                return that.x(i+1882)})
             .attr("cy", 150)
             .attr("r", 1e-6)
             .style("stroke", function(d, i){

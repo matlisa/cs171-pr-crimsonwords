@@ -133,11 +133,11 @@ FreqVis.prototype.initVis = function(){
 
     this.valueline = d3.svg.line()
         .interpolate('linear')
-        .x(function(d, i) { return that.x(i + 1700); })
+        .x(function(d, i) { return that.x(i + 1882); })
         .y(function(d) {return that.y(d.count); });
 
     this.valueline2 = d3.svg.line()
-        .x(function(d, i) { return that.x2(i + 1700); })
+        .x(function(d, i) { return that.x2(i + 1882); })
         .y(function(d) {return that.y2(d.count); });
 
         // Add axes visual elements
@@ -211,11 +211,11 @@ FreqVis.prototype.updateVis = function(newdata, extent){
         this.x.domain([d3.round(extent[0]), d3.round(extent[1])]) ;
     }
     else {
-        this.x.domain([1700, 2015]);
+        this.x.domain([1882, 2014]);
     }
 
-    this.x2.domain([1700, 2015]);
-    this.xbrush.domain([1700, 2015]);
+    this.x2.domain([1882, 2014]);
+    this.xbrush.domain([1882, 2014]);
 
     var allcounts = d3.range(0, this.displayData.length).map(function(){return [];});
     this.displayData.forEach(
@@ -284,7 +284,7 @@ FreqVis.prototype.updateVis = function(newdata, extent){
             });
     }
     
-    var k=1, n = 315;
+    var k=1, n = 132;
     d3.timer( function() { 
         draw(k);
         if((k+=2) >= n-1) {
@@ -293,9 +293,6 @@ FreqVis.prototype.updateVis = function(newdata, extent){
             return true;
         }
     })
-
-
-
 
     var path2 = this.context.selectAll(".line")
       .data(this.originalData.map(function(d) {return d.inform}))
@@ -378,11 +375,12 @@ FreqVis.prototype.onSelectionChange= function (selectionStart, selectionEnd){
 }
 
 FreqVis.prototype.brushed = function(data, extent) {
-
+    console.log(extent)
     var dateFormatter = d3.time.format("%Y.%m.%d");
 
     this.difference =  extent[0] - d3.round(extent[0]);
     var filtered_data = filterdates(this.originalData, d3.round(extent[0]), d3.round(extent[1]));
+    console.log(filtered_data)
     this.updateVis(filtered_data, extent);
     var div = document.getElementById('brushInfo');
     div.innerHTML = d3.round(extent[0])+ " to " + d3.round(extent[1]);
