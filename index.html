@@ -53,6 +53,7 @@
 
     <script src = "js/freqvis.js?ver=1"></script>
     <script src = "js/changevis.js?ver=1"></script>
+    <script src = "js/relatevis.js?ver=1"></script>
     <script src = "js/topwordsvis.js?ver=1"></script>
     <!-- add own stylesheet-->
     <link rel="stylesheet" type="text/css" href="css/myStyle.css?ver=5">
@@ -177,14 +178,14 @@
                 <label><input type="radio" name="map" value="on" checked = "checked" id = "force">On</label>
                 <label><input type="radio" name="map" value="reset">Reset</label>
             </div>
-            <div>
+            <div class="row" >
                 <strong>Time Update:</strong>
-                <label id = "min_time">1882</label><input type="range" name="years" min="0" max="17" step="1" value="0" id="slider-time" oninput=";"><label id = "max_time">2014</label>
+                <label id = "min_time">1882</label><input type="range" name="years" min="0" max="132" step="1" value="0" id="slider-time" oninput=";"><label id = "max_time">2014</label>
             </div>
             <div>
                 <strong>Link Distance: </strong>
                 <label><input type="radio" name="dist" value="not_weighted" checked = "checked" id = "not_weighted">Not Weighted</label>
-                <label><input type="radio" name="dist" value="weighted" id = "weighted">Weighted by Export Amount</label>
+                <label><input type="radio" name="dist" value="weighted" id = "weighted">Weighted by Association</label>
             </div>
         </div>
 
@@ -211,6 +212,7 @@
             var freq_vis;
             var change_vis;
             var about_vis;
+            var relate_vis;
 
             dateFormatter = d3.time.format("%Y-%m-%d %H:%M:%S");
             dateFormat = d3.time.format("%Y");
@@ -231,6 +233,8 @@
                 }
 
                 change_vis = new ChangeVis(d3.select("#changeVis"), allData, metaData, MyEventHandler);
+
+                relate_vis = new RelateVis(d3.select("#relateVis"), connectData, metaData, MyEventHandler);
 
                 var topwords_vis = new topWordsVis(d3.select("#topWordsVis"), allData, metaData, MyEventHandler2);
 
@@ -291,6 +295,7 @@
 
                 queue()
                     .defer(d3.json, "data/sample.json")
+                    .defer(d3.json, "data/sampleconnection.json")
                     .await( function (error, rawData, connectData) { dataLoaded(error, rawData, connectData); } );;
                 
                 d3.select("#fitInBtn").on("click", function() {
