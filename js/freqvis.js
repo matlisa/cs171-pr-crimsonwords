@@ -267,7 +267,7 @@ FreqVis.prototype.updateVis = function(newdata, extent){
 
     path
       .attr("id", function(d, i) {
-        console.log("path", i)
+        console.log("path", i, that.currentWord)
         return that.currentWord[i];})
       .on("click", function(d){
         window.location.href = "#percent";
@@ -312,7 +312,7 @@ FreqVis.prototype.updateVis = function(newdata, extent){
       .on("mouseover", function(d,i) {
 
           var selected = this.id;
-          console.log(this.id)
+          console.log("graph's id", this.id)
           that.selectword = this.id;
           d3.selectAll(".word")
             .style("opacity", 0.35)

@@ -1,5 +1,5 @@
 
-PrioVis = function(_parentElement, _data, _metaData){
+ChangeVis = function(_parentElement, _data, _metaData){
     this.parentElement = _parentElement;
     this.data = _data;
     this.metaData = _metaData;
@@ -15,7 +15,7 @@ PrioVis = function(_parentElement, _data, _metaData){
     
 }
 
-PrioVis.prototype.initVis = function(){
+ChangeVis.prototype.initVis = function(){
 
     this.x = d3.scale.linear()
       .domain([1700, 2014])
@@ -101,7 +101,7 @@ PrioVis.prototype.initVis = function(){
 
 }
 
-PrioVis.prototype.wrangleData= function(_filterFunction, start, end){
+ChangeVis.prototype.wrangleData= function(_filterFunction, start, end){
     var that =this;
 
     this.selectedData = this.data.filter(function(d){ return that.currentWord.indexOf(d.word) != -1});
@@ -118,11 +118,11 @@ PrioVis.prototype.wrangleData= function(_filterFunction, start, end){
 
 }
 
-PrioVis.prototype.updateVis = function(view){
+ChangeVis.prototype.updateVis = function(view){
 
 }
 
-PrioVis.prototype.onSelectionChange= function (new_word){
+ChangeVis.prototype.onSelectionChange= function (new_word){
     this.currentWord=[new_word];
     this.wrangleData();
 

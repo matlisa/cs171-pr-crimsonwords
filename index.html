@@ -51,8 +51,8 @@
 
     <script src = "js/about.js?ver=2"></script>
 
-    <script src = "js/freqvis.js?ver=3"></script>
-    <script src = "js/relatevis.js?ver=2"></script>
+    <script src = "js/freqvis.js?ver=1"></script>
+    <script src = "js/changevis.js?ver=1"></script>
     <script src = "js/topwordsvis.js?ver=1"></script>
     <!-- add own stylesheet-->
     <link rel="stylesheet" type="text/css" href="css/myStyle.css?ver=5">
@@ -145,6 +145,7 @@
             <span class = "word" id="word1"></span>
             <span class = "word" id="word2"></span>
             <span class = "word" id="word3"></span>
+            <span class = "word" id="word4"></span>
         </div>
         <br>
         <div class="row">
@@ -159,12 +160,33 @@
 
         <div class="row" >
         <p id = "percent"></p>
-            <div class="col-md-12" id="relateVis">
+            <div class="col-md-12" id="changeVis">
                 <b>Percent Change over Time</b><span id="changeInfo"></span>
             </div>
         </div>
         <br>
         <p id = "percentguide">Click anywhere on the graph to start the animation!</p>
+
+        <div class="row" >
+        <p id = "percent"></p>
+            <div class="col-md-12" id="relateVis">
+                <b>Word Relations</b>
+            </div>
+            <div>
+                <strong>Force Layout: </strong>
+                <label><input type="radio" name="map" value="on" checked = "checked" id = "force">On</label>
+                <label><input type="radio" name="map" value="reset">Reset</label>
+            </div>
+            <div>
+                <strong>Time Update:</strong>
+                <label id = "min_time">1882</label><input type="range" name="years" min="0" max="17" step="1" value="0" id="slider-time" oninput=";"><label id = "max_time">2014</label>
+            </div>
+            <div>
+                <strong>Link Distance: </strong>
+                <label><input type="radio" name="dist" value="not_weighted" checked = "checked" id = "not_weighted">Not Weighted</label>
+                <label><input type="radio" name="dist" value="weighted" id = "weighted">Weighted by Export Amount</label>
+            </div>
+        </div>
 
      </section>
 <script>
@@ -187,7 +209,7 @@
             var connectData = [];
 
             var freq_vis;
-            var relate_vis;
+            var change_vis;
             var about_vis;
 
             dateFormatter = d3.time.format("%Y-%m-%d %H:%M:%S");
@@ -208,7 +230,7 @@
                     div.innerHTML = freq_vis.currentWord;
                 }
 
-                relate_vis = new PrioVis(d3.select("#relateVis"), allData, metaData, MyEventHandler);
+                change_vis = new ChangeVis(d3.select("#changeVis"), allData, metaData, MyEventHandler);
 
                 var topwords_vis = new topWordsVis(d3.select("#topWordsVis"), allData, metaData, MyEventHandler2);
 
@@ -242,6 +264,12 @@
 
                                 return key;
                     })
+
+                    allData.sort(function(a,b){
+                        if (a.word > b.word){return 1}
+                        else{return -1}
+                    })
+                    console.log(allData)
 
                     connectData = _connectData;
 
@@ -282,7 +310,6 @@
                         freq_vis.displayData = filterdates(freq_vis.displayData, d3.round(extent[0]), d3.round(extent[1]));
                         }
 
-
                         if (!document.getElementById('word1').innerHTML) {
                             var div = document.getElementById('word1');
                             div.innerHTML = word;
@@ -293,6 +320,10 @@
                         }
                         else if (!document.getElementById('word3').innerHTML) {
                             var div = document.getElementById('word3');
+                            div.innerHTML = word;
+                        }
+                        else if (!document.getElementById('word4').innerHTML) {
+                            var div = document.getElementById('word4');
                             div.innerHTML = word;
                         }
                     /*var div1 = document.getElementById('word1');
@@ -331,14 +362,14 @@
                         // need to condense the following
                         
 
-                        console.log("addgraph", document.getElementById('word1'), document.getElementById('word2'),document.getElementById('word3'),d3.selectAll(".focus .line"), freq_vis.currentWord)
+                        /*console.log("addgraph", document.getElementById('word1'), document.getElementById('word2'),document.getElementById('word3'),d3.selectAll(".focus .line"), freq_vis.currentWord)*/
                     
                     }
                     document.getElementById('tags').value = "";
             }
             var deletegraph = function(object) {
                     var index = freq_vis.currentWord.indexOf(object.innerHTML);
-                    console.log(index)
+                
                     if (index > -1) {
                         freq_vis.currentWord.splice(index, 1);
                     }
@@ -354,7 +385,7 @@
                     }
 
                     if (freq_vis.currentWord[0]) {
-                        console.log("word1", freq_vis.currentWord[0])
+                       
                         div1.innerHTML = freq_vis.currentWord[0];
                     }
                     else {
@@ -363,7 +394,7 @@
                         div3.innerHTML = "";
                     }
                     if (freq_vis.currentWord[1]) {
-                        console.log("word2",freq_vis.currentWord[1] )
+                        
                         div2.innerHTML = freq_vis.currentWord[1];
                     }
                     else {
@@ -406,7 +437,7 @@
             })
             $("form").submit(function (e) {
                 var word = document.getElementById('tags').value;
-                if (freq_vis.currentWord.length < 3 
+                if (freq_vis.currentWord.length < 4
                     && allWords.indexOf(word) > -1
                     && freq_vis.currentWord.indexOf(word) == -1) {
                     addgraph(word);
@@ -421,11 +452,11 @@
             })
             d3.selectAll(".word").on("mouseover", function(p) {
                 var selected = this.innerHTML;
-                console.log("mouse", this.id)
+                //console.log(selected, "selected")
                 d3.selectAll(".focus .line")
                   .style("opacity", 0.35)
                   .filter(function(d) { 
-                        console.log(this.id, "filter", selected)
+                        console.log(this.id, selected)
                         return this.id==selected;
                   })
                   .style("opacity", 1)
