@@ -1,4 +1,5 @@
 topWordsVis = function(_parentElement, _data, _metaData, _eventHandler){
+    // constants
     this.parentElement = _parentElement;
     this.data = _data;
     this.eventHandler = _eventHandler;
@@ -16,6 +17,7 @@ topWordsVis = function(_parentElement, _data, _metaData, _eventHandler){
 
 topWordsVis.prototype.initVis = function(){
 
+    // Set up scales
     var that = this; 
 
     this.color= d3.scale.category10()
@@ -24,12 +26,6 @@ topWordsVis.prototype.initVis = function(){
             .attr("width", this.width + this.margin.left + this.margin.right)
             .attr("height", this.height + this.margin.top + this.margin.bottom)
 
-    /*this.svg.append("g")
-        .append("text")
-        .attr("class", "title")
-        .text("Top 10 Words of Selected Period")
-        .attr("x", this.width/4)
-        .attr("y", 20)*/
     this.svg=this.svg.append("g")
         .attr("transform", "translate(" + this.margin.left + "," + this.margin.top + ")");
 
@@ -41,6 +37,7 @@ topWordsVis.prototype.initVis = function(){
     this.x = d3.scale.linear()
       .range([0, this.width-150])
 
+    // Set up axes
     this.yAxis = d3.svg.axis()
       .ticks(6)
       .orient("left");
@@ -71,6 +68,7 @@ topWordsVis.prototype.wrangleData= function(_filterFunction){
 topWordsVis.prototype.updateVis = function(){
     
     var len=this.displayData.length
+    // Takes up row if data length is less than 6
     var space =""
     for (var i =0; i < 6-len; i++){
         var space = space +" "
@@ -88,6 +86,7 @@ topWordsVis.prototype.updateVis = function(){
 
     var that = this;
     
+    // create axes
     this.svg.select(".y.axis")
         .call(this.yAxis)
         .selectAll("text")
@@ -102,6 +101,7 @@ topWordsVis.prototype.updateVis = function(){
     this.svg.select(".y.axis")
         .call(this.yAxis)
 
+    //create barchart
     this.rows = this.svg
                     .selectAll(".row")
                     .data(this.displayData)
