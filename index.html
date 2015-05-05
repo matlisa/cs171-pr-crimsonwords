@@ -53,7 +53,7 @@
 
     <script src = "js/freqvis.js?ver=2"></script>
     <script src = "js/changevis.js?ver=2"></script>
-    <script src = "js/relatevis.js?ver=2"></script>
+    <script src = "js/relatevis.js?ver=3"></script>
     <script src = "js/topwordsvis.js?ver=1"></script>
     <!-- add own stylesheet-->
     <link rel="stylesheet" type="text/css" href="css/myStyle.css?ver=2">
@@ -105,7 +105,7 @@
                 </div>
             </div>
                 <h1 class="brand-heading">Words</h1>
-                <span id = "instructions">Complete the word. Double-clicking unfixes the nodes.</span><br>
+                <span id = "instructions">Complete the word by dragging the floating elements to their right places. Double-clicking unfixes the nodes.</span><br>
                 <input class="btn btn-default" id="ready" type="submit" value="Ready?"/>
                 <p class="intro-text" style = "padding-top: 20px">A time-serialized visualization of word appearances in Harvard&#39;s student publication, The Crimson.</p>
                 <a href="#about" class="btn btn-circle page-scroll">
@@ -278,7 +278,7 @@
                         if (a.word > b.word){return 1}
                         else{return -1}
                     })
-                    console.log(allData)
+
 
                     connectData = _connectData;
 

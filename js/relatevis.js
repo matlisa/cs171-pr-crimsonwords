@@ -17,6 +17,10 @@ RelateVis = function(_parentElement, _data, _metaData, _eventHandler){
     this.width = getInnerWidth(this.parentElement) - this.margin.left - this.margin.right;
     this.height = 500 - this.margin.top - this.margin.bottom;
 
+
+    this.data
+
+
     this.initVis();
 }
 
@@ -46,10 +50,37 @@ RelateVis.prototype.initVis = function(){
                        .scale(this.xscale)
                        .orient("bottom")
 
+    var start_year = d3.select('#slider-time').property("value")/5;
+
     this.force = d3.layout.force()
         .size([this.width, this.height])
         .charge(-300)
         .gravity(0.7)
+        .linkDistance(function(d,i){ 
+        var target = d.target.word;
+        var index = that.get_index(d.source, target, start_year)
+        console.log(d.source.years[start_year].top_partners[index].total_connections)
+         
+        /*if (d3.select("input[value=\"not_weighted\"]").node().checked) {
+          that.linkscale.domain([0, 1]);
+          return that.linkscale(1);
+        }
+        else if (d3.select("input[value=\"weighted\"]").node().checked) {
+
+          that.length = that.find_length(data.links, d.target.word, year);
+
+          that.linkscale.domain([that.length[0], that.length[1]]);
+          if (that.length[2][i]) {
+            return that.linkscale(that.length[2][i]);}
+          else return 0;
+
+        }*/
+
+        return 10;
+
+
+      })
+
 
     var length = 0;
 
@@ -81,7 +112,7 @@ RelateVis.prototype.initVis = function(){
         else {return "#fff"} })
       .style("opacity", 0.7)*/
 
-    var start_year = d3.select('#slider-time').property("value")/5;
+    
     this.trial_links = this.package_imports(this.data, start_year);
 
     this.all_data = {"nodes":this.data, "links":this.trial_links};
@@ -89,9 +120,11 @@ RelateVis.prototype.initVis = function(){
     this.link = this.svg.selectAll(".link")
         .data(this.all_data.links);
 
+    console.log(this.all_data.links)
+
     this.link
       .enter().append("line")
-      .attr("class", "link")      
+      .attr("class", "link")   
 
     this.link
       .exit()
@@ -329,8 +362,11 @@ RelateVis.prototype.find_range = function(data, word) {
   var that = this;
   var max_length = 0;
   var min_length = 0;
+  var max_count = 0;
+  var min_count = 0;
   var weight = [];
   var length= [];
+  var count = [];
   var index = [];
   var sum = 0;
 
@@ -345,7 +381,9 @@ RelateVis.prototype.find_range = function(data, word) {
     for (var i = 0; i < data.length; i ++) {
 
       if (index[i] != -1 ){
-        weight[i] = (data[i].source.years[year].top_partners[index[i]].total_connections)/sum;
+        count[i] = data[i].source.years[year].top_partners[index[i]].total_connections;
+        weight[i] = count[i]/sum;
+        
         length[i] = (1/Math.exp(Math.exp(weight[i])));
         
         if (min_length > length[i]) {
@@ -354,10 +392,17 @@ RelateVis.prototype.find_range = function(data, word) {
         if (max_length < length[i]) {
           max_length = length[i];
         }
+
+        if (min_count > count[i]) {
+          min_count = count[i];
+        }
+        if (max_count < count[i]) {
+          max_count = count[i];
+        }
       }
     }
   }
-  return [min_length, max_length, sum]
+  return [min_length, max_length, sum, min_count, max_count]
 }
 
 
@@ -433,12 +478,14 @@ RelateVis.prototype.package_imports = function(nodes, year) {
       if (d != "") {
 
         if (d.years[year].top_partners) { d.years[year].top_partners.forEach(function(dd) {
+
           if (map[dd.word] && map[d.word]) {
           connect.push({source: map[d.word], target: map[dd.word]}); }
           })
         }
       }
     });
+
     return connect;
 }
 
@@ -456,6 +503,12 @@ RelateVis.prototype.tick_all = function(e) {
     d3.selectAll(".node")
       .attr("cx", function(d) {return d.x;})
       .attr("cy", function(d) {return d.y;})
+
+    d3.selectAll(".link")
+            .attr("x1", function(d) { return d.source.x; })
+            .attr("y1", function(d) { return d.source.y; })
+            .attr("x2", function(d) { return d.target.x; })
+            .attr("y2", function(d) { return d.target.y; });
 }
 
 RelateVis.prototype.force_change = function(data, year){
@@ -520,12 +573,18 @@ RelateVis.prototype.force_change = function(data, year){
             else { return 0;}
           }
           else {  
-            var min = d3.min(data.nodes, function(dd){
+
+            var range = that.find_range(data.links, data.links[0].target.word);
+
+            /*var min = d3.min(data.nodes, function(dd){
               return dd.years[year].top_partners[index].total_connections;})
             var max = d3.max(data.nodes, function(dd){
-              return dd.years[year].top_partners[index].total_connections;})
+              return dd.years[year].top_partners[index].total_connections;})*/
+            var min = range[3]
+            var max = range[4]
             that.exscale.domain([min, max]);
             return that.exscale(d.years[year].top_partners[index].total_connections);
+
           }
         }
       })
@@ -541,6 +600,9 @@ RelateVis.prototype.force_change = function(data, year){
    
     this.tip 
       .html(function(d) {
+        var year = d3.select('#slider-time').property("value")/5;
+        var index = that.get_index(d, data.links[0].target.word, year);
+
         if (d.word != data.links[0].target.word) {
           return "<strong>" + d.word + "</strong> <span style='color:#8F8F8F'>" 
           + (d.years[year].top_partners[index].total_connections) + "</span>";}
