@@ -6,14 +6,12 @@ RelateVis = function(_parentElement, _data, _metaData, _eventHandler){
     this.displayData = [];
     this.originalData = [];
 
-    //this.node, this.message, this.max_value, this.min_value;
     this.track_alpha =0;
     this.written = 0;
     this.word_selected = "";
     this.weight = 0;
     this.sum = 0;
 
-  
     this.margin = {top: 0, bottom: 10, left: 20, right: 20};
     this.width = getInnerWidth(this.parentElement) - this.margin.left - this.margin.right;
     this.height = 500 - this.margin.top - this.margin.bottom;
@@ -29,12 +27,6 @@ RelateVis.prototype.initVis = function(){
     this.yscale = d3.scale.linear().range([0, this.height]);
     this.exscale = d3.scale.linear().range([5, this.height/25]);
     this.linkscale = d3.scale.linear().range([5, this.height/1.5]);
-
-    /*var group_scale = d3.scale.ordinal().domain(["Africa", "Asia", "Oceania", "Europe", "Americas"])
-
-    var gdpformat = d3.format("0,.1f");
-    var prefix = d3.formatPrefix(1.25e9);
-    var prefix_pop = d3.formatPrefix(1.25e6);*/
 
     // Creates sources <svg> element and inner g (for margins)
     this.svg = this.parentElement.append("svg")
@@ -56,34 +48,12 @@ RelateVis.prototype.initVis = function(){
 
     var length = 0;
 
-    //var color = d3.scale.category20();
-
-    this.pie = d3.layout.pie();
-
     this.r = Math.min(this.height, this.width)/1.3;
-
-    this.arc = d3.svg.arc()
-              .innerRadius(0);
 
     this.tip = d3.tip()
       .attr('class', 'd3-tip')
       .offset([-10, 0])
       .style("opacity", 0)
-
-    /*this.background = this.svg.selectAll(".background")
-      .data([1.6, 2.5])
-    
-    this.background
-      .enter().append("circle")
-      .attr("class", "background")
-      .attr("r", function(d, i) { return that.r/d; })
-      .attr("cx", this.width/2)
-      .attr("cy", this.height/2)
-      .style("fill", function(d) {
-        if (d == 2.2) { return "#fff";}
-        else {return "#fff"} })
-      .style("opacity", 0.7)*/
-
     
     this.trial_links = this.package_imports(this.data, start_year);
 
@@ -100,7 +70,6 @@ RelateVis.prototype.initVis = function(){
       .exit()
       .remove();
 
-
     this.node = this.svg.selectAll(".node")
       .data(this.data);
 
@@ -108,7 +77,6 @@ RelateVis.prototype.initVis = function(){
       .enter().append("circle")
       .attr("class", "node")
       .attr("r", 5.5)
-      //.style("fill", function(d) { return color(d.continent); })
       .call(this.force.drag)
       .on("click", function(d) {
         d3.select('#force').property("checked", "checked");
@@ -180,27 +148,7 @@ RelateVis.prototype.initVis = function(){
             that.force_change(new_data, year);
           }
       }
-      /*
-      else if (d3.select("input[value=\"gdp\"]").node().checked) {
-        circular_layout(this.data, "gdp", year);
-      }
-      else if (d3.select("input[value=\"population\"]").node().checked) {
-        circular_layout(this.data, "population", year);
-      }*/
     });
-
-    /*d3.select("input[value=\"gdp\"]").on("change", function() {
-      var year = d3.select('#slider-time').property("value");
-      circular_layout(this.data, "gdp", year);
-    })
-    d3.select("input[value=\"population\"]").on("change", function() {
-      var year = d3.select('#slider-time').property("value");
-      circular_layout(this.data, "population", year);
-    })
-    d3.select("input[value=\"alpha\"]").on("change", function() {
-      var year = d3.select('#slider-time').property("value");
-      circular_layout(data, "name", year);
-    })*/
 
     d3.select("input[value=\"on\"]").on("change", function() {
       var year = d3.select('#slider-time').property("value")/5;
@@ -222,91 +170,7 @@ RelateVis.prototype.initVis = function(){
         d3.select("#force").property("checked", true);
       }
     })
-
-
-
 }
-
-/*
-RelateVis.prototype.circular_layout = function(data, val, year) {
-    
-    var that = this
-    var filtered = data.filter(function(d, i) {
-        if (countries.indexOf(d.name) > -1) {
-        return true;}
-    }) 
-
-    track_alpha = 0;
-    d3.select("#force").property("checked", false);
-
-    var empty = [];
-    link = svg.selectAll(".link")
-        .data(empty);
-
-    link
-      .exit()
-      .remove();
-
-    force.stop();
-
-    svg.call(tip);
-    
-    arc.outerRadius(r);
-    pie
-      .sort(function(a, b) { 
-      if (val == "name") {
-        return d3.ascending(a[val], b[val]);
-      }
-      else {
-        return d3.ascending(a.years[year][val], b.years[year][val]);}}) // Sorting by categories
-      .value(function(d, i) { 
-        return 1;  // We want an equal pie share/slice for each point
-      });
-
-    data = pie(data).map(function(d, i) {
-      // Needed to caclulate the centroid
-      
-      d.innerRadius = 0;
-      d.outerRadius = r;
-      // Building the data object we are going to return
-      d.data.x = arc.centroid(d)[0]+width/2;
-      d.data.y = arc.centroid(d)[1]+height/2;
-      return d.data;
-    })
-
-    node.transition().duration(500)
-      .attr("cx", function(d) { return d.x; })
-      .attr("cy", function(d) { return d.y; })
-
-    if (val == "gdp") {
-      tip
-        .html(function(d) {
-          return "<strong>" + d.name + "</strong> <span style='color:#8F8F8F'>" + (gdpformat(prefix.scale(d.years[year]["gdp"]))+prefix.symbol) + "</span>";
-      })
-    }
-    else if (val == "population") {
-      tip
-        .html(function(d) {
-          return "<strong>" + d.name + "</strong> <span style='color:#8F8F8F'>" + (gdpformat(prefix_pop.scale(d.years[year]["population"]))+prefix_pop.symbol) + "</span>";
-      })
-    }
-    else if (val == "name") {
-      tip
-        .html(function(d) {
-          return "<strong>" + d.name + "</strong>";
-      })
-    }
-    node
-      .on("mouseover", tip.show)        
-      .on("mouseout", tip.hide)
-}
-*/
-
-  /*function get_coordinates(data, country) {
-    if (data.name == country) {
-      return [data.longitude, data.latitude];
-    } 
-  }*/
 
 RelateVis.prototype.get_index = function(data, word, year) {
     
@@ -385,37 +249,10 @@ RelateVis.prototype.find_length = function(data, word, year) {
     var that = this;
     var max_length = 0;
     var min_length = 0;
-    //var max_dist = 0;
-    //var min_dist = 0;
-
     var sum = 0;
-
-    //var lat = [];
-    //var longi = [];
-    //var dist = [];
-
     var weight = [];
     var length= [];
     var index = [];
-    //var location = get_coordinates(data[0].target, country);
-    
-    /*for (var i = 0; i < data.length; i ++) {
-
-      
-      index[i] = that.get_index(data[i].source, word, year);
-      if (index[i] != -1){
-        lat[i] = data[i].source.latitude;
-        longi[i] = data[i].source.longitude;
-        dist[i] = Math.sqrt((longi[i]-location[0])* (longi[i]-location[0])+ (lat[i] - location[1])*(lat[i] - location[1]));
-        if (min_dist > dist[i]) {
-          min_dist = dist[i];
-        }
-        if (max_dist < dist[i]) {
-          max_dist = dist[i];
-        }
-        sum = (data[i].source.years[year].top_partners[index[i]].total_connections) + sum;
-      }
-    }*/
     var range = this.find_range(data, word);
     sum = range[2];
     min_length = range[0];
@@ -429,12 +266,6 @@ RelateVis.prototype.find_length = function(data, word, year) {
        
         length[i] = (1/Math.sqrt(Math.sqrt(weight[i])));
         
-        /*if (min_length > length[i]) {
-          min_length = length[i];
-        }
-        if (max_length < length[i]) {
-          max_length = length[i];
-        })*/
       }
     }
     return [min_length, max_length, length];
@@ -484,14 +315,9 @@ RelateVis.prototype.tick_all = function(e) {
 RelateVis.prototype.force_change = function(data, year){
     var that = this
     this.force
-      //.charge(-30)
-      //.gravity(0.1)
       .linkDistance(function(d,i){ 
         if (d3.select("input[value=\"not_weighted\"]").node().checked) {
           that.linkscale.domain([0, 1]);
-          /*if (that.length[5][i]) {
-            return that.linkscale(that.length[5][i]);}
-          else return 0;*/
           return that.linkscale(1);
         }
         else if (d3.select("input[value=\"weighted\"]").node().checked) {
@@ -545,11 +371,6 @@ RelateVis.prototype.force_change = function(data, year){
           else {  
 
             var range = that.find_range(data.links, data.links[0].target.word);
-
-            /*var min = d3.min(data.nodes, function(dd){
-              return dd.years[year].top_partners[index].total_connections;})
-            var max = d3.max(data.nodes, function(dd){
-              return dd.years[year].top_partners[index].total_connections;})*/
             var min = range[3]
             var max = range[4]
             
@@ -564,12 +385,6 @@ RelateVis.prototype.force_change = function(data, year){
         if (d.word == that.word_selected) {
           return "yellow";} 
       })
-      
-      /*.style("stroke-width", function(d) {
-        if (d.word == that.word_selected) {
-          return 1.5;} 
-      })*/
-
    
     this.tip 
       .html(function(d) {
@@ -654,7 +469,6 @@ RelateVis.prototype.reset = function(data) {
       this.node
         .attr("class", "node")
         .attr("r", 5.5)
-        //.style("fill", function(d) { return color(d.continent); })
         .call(this.force.drag)
         .on("click", function(d) {
           d3.select('#force').property("checked", "checked");
@@ -673,10 +487,6 @@ RelateVis.prototype.reset = function(data) {
             return "black";} 
         })
         .style("stroke", "none")
-        /*.style("stroke-width", function(d) {
-          if (d.word == that.word_selected) {
-            return 0;} 
-        })*/
         .on("mouseover", this.tip.show)        
         .on("mouseout", this.tip.hide)
       

@@ -35,12 +35,6 @@ ChangeVis.prototype.initVis = function(){
         .attr("height", this.height + this.margin.top + this.margin.bottom)
       .append("g")
         .attr("transform", "translate(" + this.margin.left + "," + this.margin.top + ")");
-    
-    /*this.svg.append("text")
-        .attr("class", "title")
-        .attr("x", (this.width/2)-50)             
-        .attr("y", 0 - (this.margin.top/3))
-        .text("Percent Change over Time");*/
 
     this.svg.append("g")
         .attr("class", "x axis")
@@ -60,7 +54,6 @@ ChangeVis.prototype.initVis = function(){
         that.svg.selectAll("change")
             .data(that.displayData)
         .enter().append("circle")
-            //.insert("circle", "rect")
             .attr("class", "change")
             .attr("cx", function(d, i) { 
                 return that.x(i+1882)})
@@ -117,10 +110,6 @@ ChangeVis.prototype.wrangleData= function(_filterFunction, start, end){
         }
     })
     }
-
-}
-
-ChangeVis.prototype.updateVis = function(view){
 
 }
 

@@ -24,7 +24,6 @@
     <script src="http://labratrevenge.com/d3-tip/javascripts/d3.tip.v0.6.3.js"></script>
 
 
-
     <!-- Bootstrap Core CSS -->
     <link href="css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
@@ -44,13 +43,7 @@
         <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
 
-
-
-
-
-
     <script src = "js/about.js?ver=1"></script>
-
     <script src = "js/freqvis.js?ver=2"></script>
     <script src = "js/changevis.js?ver=2"></script>
     <script src = "js/relatevis.js?ver=1"></script>
@@ -277,15 +270,9 @@
                                 }
                                 return key;
                     })
-                    
-                    /*allData.sort(function(a,b){
-                        if (a.word > b.word){return 1}
-                        else{return -1}
-                    })*/
        
                     connectData = connectiondata(allData);
                     initVis();
-    
             }
 
             var startHere = function(){
@@ -308,232 +295,166 @@
             }
 
             var addgraph = function(word, i) {
-                    /*if (!word) {
-                        word = document.getElementById('tags').value;
-                    }*/
-                    
-                    if (freq_vis.currentWord.indexOf(word) == -1) {
-                        freq_vis.currentWord.push(word);
-                        //console.log("vector", freq_vis.currentWord);
-                        freq_vis.wrangleData();
-                        var extent = freq_vis.brush.extent();
-                        if (extent[0] != extent[1]) {
-                        freq_vis.displayData = filterdates(freq_vis.displayData, d3.round(extent[0]), d3.round(extent[1]));
-                        }
-                        if (i == 0) {
-                            var div = document.getElementById('word1');
-                            div.innerHTML = word;
-                        }
-                        else if (i == 1) {
-                            var div = document.getElementById('word2');
-                            div.innerHTML = word;
-                        }
-                        else if (i == 2) {
-                            var div = document.getElementById('word3');
-                            div.innerHTML = word;
-                        }
-                        else if (i == 3) {
-                            var div = document.getElementById('word4');
-                            div.innerHTML = word;
-                        }
-                        else if (i == 4) {
-                            var div = document.getElementById('word5');
-                            div.innerHTML = word;
-                        }
-                        else {
-                            var div = document.getElementById('word6');
-                            div.innerHTML = word;
-                        }
-                        /*if (!document.getElementById('word1').innerHTML) {
-                            var div = document.getElementById('word1');
-                            div.innerHTML = word;
-                        }
-                        else if (!document.getElementById('word2').innerHTML) {
-                            var div = document.getElementById('word2');
-                            div.innerHTML = word;
-                        }
-                        else if (!document.getElementById('word3').innerHTML) {
-                            var div = document.getElementById('word3');
-                            div.innerHTML = word;
-                        }
-                        else if (!document.getElementById('word4').innerHTML) {
-                            var div = document.getElementById('word4');
-                            div.innerHTML = word;
-                        }
-                        else if (!document.getElementById('word5').innerHTML) {
-                            var div = document.getElementById('word5');
-                            div.innerHTML = word;
-                        }
-                        else if (!document.getElementById('word6').innerHTML) {
-                            var div = document.getElementById('word6');
-                            div.innerHTML = word;
-                        }*/
-                    /*var div1 = document.getElementById('word1');
-                    var div2 = document.getElementById('word2');
-                    var div3 = document.getElementById('word3');
-                    if (freq_vis.currentWord[0]) {
-                        console.log("word1", freq_vis.currentWord[0])
-                        div1.innerHTML = freq_vis.currentWord[0];
-                    }
-                    else {
-                        div1.innerHTML = "";
-                        div2.innerHTML = "";
-                        div3.innerHTML = "";
-                    }
-                    if (freq_vis.currentWord[1]) {
-                        console.log("word2",freq_vis.currentWord[1] )
-                        div2.innerHTML = freq_vis.currentWord[1];
-                    }
-                    else {
-                        div2.innerHTML = "";
-                        div3.innerHTML = "";
-                    }
-                    if (freq_vis.currentWord[2]) {
-                        
-                        div3.innerHTML = freq_vis.currentWord[2];
-                    }
-                    else {
-                        div3.innerHTML = "";
-                    }*/
-                    
-                        freq_vis.updateVis(freq_vis.displayData, freq_vis.brush.extent());
-                       
-                        // need to condense the following
-                        
-                        /*console.log("addgraph", document.getElementById('word1'), document.getElementById('word2'),document.getElementById('word3'),d3.selectAll(".focus .line"), freq_vis.currentWord)*/
-                    
-                    }
-                    document.getElementById('tags').value = "";
-            }
-            var deletegraph = function(object) {
-                    var todelete = $('#'+object.id).html();
-                    _allData = _allData.filter(function(v) {return v.word != todelete;});
-                    allData = _allData.map(function(d) { 
-                                var res=d3.range(0,132).map(function(e,i) {
-                                    
-                                    return {count:0, link:"" };});
-                                d.count.map(function(dd, i) {
-                                    var index=parseInt(dd.web_publish_date.substring(0, 4))-1882;
-                                    index = d3.max([index, 0]);
-                                    index = d3.min([index, 131]);
-                                    // console.log(index)
-                                    res[index].count += 1;
-                                    
-                                })
-                                var key = {
-                                    inform: res,
-                                    word: d.word
-                                }
-                                return key;
-                    })
 
-
-
-                    //allData = _allData.filter(function(v) {return v.word != todelete;});
-                    //console.log("after delete", allData)
-                    connectData = connectiondata(allData);
-                    
-
-                    var index = freq_vis.currentWord.indexOf(object.innerHTML);
-                
-                    if (index > -1) {
-                        freq_vis.currentWord.splice(index, 1);
-                    }
-                    var div1 = document.getElementById('word1');
-                    var div2 = document.getElementById('word2');
-                    var div3 = document.getElementById('word3');
-                    var div4 = document.getElementById('word4');
-                    var div5 = document.getElementById('word5');
-                    var div6 = document.getElementById('word6');
-
+                if (freq_vis.currentWord.indexOf(word) == -1) {
+                    freq_vis.currentWord.push(word);
                     freq_vis.wrangleData();
                     var extent = freq_vis.brush.extent();
                     if (extent[0] != extent[1]) {
-                        freq_vis.displayData = filterdates(freq_vis.displayData, d3.round(extent[0]), d3.round(extent[1]));
+                    freq_vis.displayData = filterdates(freq_vis.displayData, d3.round(extent[0]), d3.round(extent[1]));
                     }
-                    if (freq_vis.currentWord[0]) {
-                       
-                        div1.innerHTML = freq_vis.currentWord[0];
+                    if (i == 0) {
+                        var div = document.getElementById('word1');
+                        div.innerHTML = word;
                     }
-                    else {
-                        div1.innerHTML = "";
-                        div2.innerHTML = "";
-                        div3.innerHTML = "";
-                        div4.innerHTML = "";
-                        div5.innerHTML = "";
-                        div6.innerHTML = "";
+                    else if (i == 1) {
+                        var div = document.getElementById('word2');
+                        div.innerHTML = word;
                     }
-                    if (freq_vis.currentWord[1]) {
-                        
-                        div2.innerHTML = freq_vis.currentWord[1];
+                    else if (i == 2) {
+                        var div = document.getElementById('word3');
+                        div.innerHTML = word;
                     }
-                    else {
-                        div2.innerHTML = "";
-                        div3.innerHTML = "";
-                        div4.innerHTML = "";
-                        div5.innerHTML = "";
-                        div6.innerHTML = "";
+                    else if (i == 3) {
+                        var div = document.getElementById('word4');
+                        div.innerHTML = word;
                     }
-                    if (freq_vis.currentWord[2]) {
-                        
-                        div3.innerHTML = freq_vis.currentWord[2];
+                    else if (i == 4) {
+                        var div = document.getElementById('word5');
+                        div.innerHTML = word;
                     }
                     else {
-                        div3.innerHTML = "";
-                        div4.innerHTML = "";
-                        div5.innerHTML = "";
-                        div6.innerHTML = "";
+                        var div = document.getElementById('word6');
+                        div.innerHTML = word;
                     }
-                    if (freq_vis.currentWord[3]) {
-                        
-                        div4.innerHTML = freq_vis.currentWord[3];
-                    }
-                    else {
-                        div4.innerHTML = "";
-                        div5.innerHTML = "";
-                        div6.innerHTML = "";
-                    }
-                    if (freq_vis.currentWord[4]) {
-                        
-                        div5.innerHTML = freq_vis.currentWord[4];
-                    }
-                    else {
-                        div5.innerHTML = "";
-                        div6.innerHTML = "";
-                    }
-                    if (freq_vis.currentWord[5]) {
-                        
-                        div6.innerHTML = freq_vis.currentWord[5];
-                    }
-                    else {
-                        div6.innerHTML = "";
-                    }
-                    
-                    //object.innerHTML = "";
-                    freq_vis.updateVis(freq_vis.displayData, freq_vis.brush.extent());
-                    topwords_vis.data = allData;
                 
-                    topwords_vis.onBrushChange(freq_vis.brush.extent()[0], freq_vis.brush.extent[1]);
+                    freq_vis.updateVis(freq_vis.displayData, freq_vis.brush.extent());
+                
+                }
+                document.getElementById('tags').value = "";
+            }
+            var deletegraph = function(object) {
+                var todelete = $('#'+object.id).html();
+                _allData = _allData.filter(function(v) {return v.word != todelete;});
+                allData = _allData.map(function(d) { 
+                            var res=d3.range(0,132).map(function(e,i) {
+                                
+                                return {count:0, link:"" };});
+                            d.count.map(function(dd, i) {
+                                var index=parseInt(dd.web_publish_date.substring(0, 4))-1882;
+                                index = d3.max([index, 0]);
+                                index = d3.min([index, 131]);
+                                // console.log(index)
+                                res[index].count += 1;
+                                
+                            })
+                            var key = {
+                                inform: res,
+                                word: d.word
+                            }
+                            return key;
+                })
 
+                connectData = connectiondata(allData);
+                
 
-                    relate_vis.data = connectData;
-                    console.log("connect", relate_vis.data)
-                    relate_vis.reset(connectData);
+                var index = freq_vis.currentWord.indexOf(object.innerHTML);
+            
+                if (index > -1) {
+                    freq_vis.currentWord.splice(index, 1);
+                }
+                var div1 = document.getElementById('word1');
+                var div2 = document.getElementById('word2');
+                var div3 = document.getElementById('word3');
+                var div4 = document.getElementById('word4');
+                var div5 = document.getElementById('word5');
+                var div6 = document.getElementById('word6');
+
+                freq_vis.wrangleData();
+                var extent = freq_vis.brush.extent();
+                if (extent[0] != extent[1]) {
+                    freq_vis.displayData = filterdates(freq_vis.displayData, d3.round(extent[0]), d3.round(extent[1]));
+                }
+                if (freq_vis.currentWord[0]) {
+                   
+                    div1.innerHTML = freq_vis.currentWord[0];
+                }
+                else {
+                    div1.innerHTML = "";
+                    div2.innerHTML = "";
+                    div3.innerHTML = "";
+                    div4.innerHTML = "";
+                    div5.innerHTML = "";
+                    div6.innerHTML = "";
+                }
+                if (freq_vis.currentWord[1]) {
+                    
+                    div2.innerHTML = freq_vis.currentWord[1];
+                }
+                else {
+                    div2.innerHTML = "";
+                    div3.innerHTML = "";
+                    div4.innerHTML = "";
+                    div5.innerHTML = "";
+                    div6.innerHTML = "";
+                }
+                if (freq_vis.currentWord[2]) {
+                    
+                    div3.innerHTML = freq_vis.currentWord[2];
+                }
+                else {
+                    div3.innerHTML = "";
+                    div4.innerHTML = "";
+                    div5.innerHTML = "";
+                    div6.innerHTML = "";
+                }
+                if (freq_vis.currentWord[3]) {
+                    
+                    div4.innerHTML = freq_vis.currentWord[3];
+                }
+                else {
+                    div4.innerHTML = "";
+                    div5.innerHTML = "";
+                    div6.innerHTML = "";
+                }
+                if (freq_vis.currentWord[4]) {
+                    
+                    div5.innerHTML = freq_vis.currentWord[4];
+                }
+                else {
+                    div5.innerHTML = "";
+                    div6.innerHTML = "";
+                }
+                if (freq_vis.currentWord[5]) {
+                    
+                    div6.innerHTML = freq_vis.currentWord[5];
+                }
+                else {
+                    div6.innerHTML = "";
+                }
+                
+                freq_vis.updateVis(freq_vis.displayData, freq_vis.brush.extent());
+                topwords_vis.data = allData;
+            
+                topwords_vis.onBrushChange(freq_vis.brush.extent()[0], freq_vis.brush.extent[1]);
+
+                relate_vis.data = connectData;
+                relate_vis.reset(connectData);
                     
             }
             var changeimg = function() {
-                    var allnodes = d3.selectAll(".node.fixed");
-                    if (allnodes[0].length == 9) {
-                        $(".intro").stop().animate({opacity: 0},300,function(){
-                            $(this).css({'background': "url(http://matlisa.github.io/cs171-pr-crimsonwords/img/background6.png) no-repeat bottom center scroll"})
-                                       .animate({opacity: 1},{duration:1300});
-                         });
-                        about_vis.node.remove();
-                        about_vis.link.remove();
-                        document.getElementById("ready").style.visibility = "hidden";
-                        
-                    }
-                    else {document.getElementById("ready").value = "Try Again"}
+                var allnodes = d3.selectAll(".node.fixed");
+                if (allnodes[0].length == 9) {
+                    $(".intro").stop().animate({opacity: 0},300,function(){
+                        $(this).css({'background': "url(http://matlisa.github.io/cs171-pr-crimsonwords/img/background6.png) no-repeat bottom center scroll"})
+                                   .animate({opacity: 1},{duration:1300});
+                     });
+                    about_vis.node.remove();
+                    about_vis.link.remove();
+                    document.getElementById("ready").style.visibility = "hidden";
+                    
+                }
+                else {document.getElementById("ready").value = "Try Again"}
             }
 
             var connectiondata = function() {
@@ -612,10 +533,9 @@
                                 
                                 for (var j = 0,n=_allData.length; j<n;j++)
                                 {
-                                    console.log("hi", _allData[j]['word'], j);
                                     addgraph(_allData[j]['word'], j);
                                 }
-                                //addgraph(word);
+
                               } 
                             });
                           }); 
@@ -631,13 +551,10 @@
 
             d3.selectAll(".word").on("mouseover", function(p) {
                 var selected = this.innerHTML;
-                //console.log(selected, "selected")
+
                 d3.selectAll(".focus .line")
                   .style("opacity", 0.35)
-                  .filter(function(d) { 
-
-                        return this.id==selected;
-                  })
+                  .filter(function(d) { return this.id==selected; })
                   .style("opacity", 1)
                   .style("stroke", "#F0C808")
                   .style("stroke-width", 2.5);
@@ -659,6 +576,7 @@
         var style = window.getComputedStyle(element.node(), null);
         return parseInt(style.getPropertyValue('width'));
     }
+
     var filterdates = function(data, from, to) {
         var filtered = [];
         var newdata = [];
@@ -670,6 +588,7 @@
         });
         return newdata;
     }
+
     var mousemove = function(object, countvis, word) {      
                        
         if (object) {
@@ -711,17 +630,14 @@
     </script>
 
 
-
-
-
-    <!-- Contact Section -->
+    <!-- End Section -->
     <section id="contact" class="content-section text-center">
         <div class="download-section">
             <div class="container">
                 <div class="col-lg-8 col-lg-offset-2">
                     <h2>Thank You!</h2><br/>
-                    <div style='background-color: #333;'>
-                        <a href='https://docs.google.com/a/college.harvard.edu/document/d/11XAu5y1TUG6wV5DLO2QuyTnPdtt1BL5U0X2JmN5a3LU/edit?usp=sharing'>Process Book</a> (requires @college.harvard.edu login)</br>
+                    <div>
+                        <a href='https://docs.google.com/a/college.harvard.edu/file/d/0B_Cw7Hn4WyzIUTdfVlNoM0J0cHc'>Process Book</a> (requires @college.harvard.edu login)</br>
                         <a href='https://www.youtube.com/watch?v=oRcHtabkg54'>Screencast</a>
                     </div>
                 </div>
