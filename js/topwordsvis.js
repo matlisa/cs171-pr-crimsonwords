@@ -81,6 +81,9 @@ topWordsVis.prototype.updateVis = function(){
 
     var that = this;
 
+    for (var i =0; i < 10-this.displayData.length; i++){
+    this.displayData.push({sum:0, word:""})
+    }
     this.svg.select(".y.axis")
         .call(this.yAxis)
         .selectAll("text")

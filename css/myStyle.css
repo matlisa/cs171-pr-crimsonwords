@@ -131,7 +131,7 @@
 }
 /* range slider */
 #slider-time {
-  width:300px !important;
+  width:15% !important;
   display: inline !important;
 }
 /* Syle the search button. Settings of line-height, font-size, text-indent used to hide submit value in IE */
