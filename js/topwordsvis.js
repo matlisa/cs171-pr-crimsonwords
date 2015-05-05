@@ -70,6 +70,13 @@ topWordsVis.prototype.wrangleData= function(_filterFunction){
 
 topWordsVis.prototype.updateVis = function(){
     
+    var len=this.displayData.length
+    var space =""
+    for (var i =0; i < 6-len; i++){
+        var space = space +" "
+        this.displayData.push({sum:0, word:space})
+    }
+
     this.y.domain(this.displayData.map(function(d,i){
         return d.word}))
 
@@ -80,7 +87,7 @@ topWordsVis.prototype.updateVis = function(){
     this.xAxis.scale(this.x)
 
     var that = this;
-
+    
     this.svg.select(".y.axis")
         .call(this.yAxis)
         .selectAll("text")
@@ -107,7 +114,7 @@ topWordsVis.prototype.updateVis = function(){
     this.rows
       	.attr("fill", "#CDEDF6") 
       	.attr("height" , this.y.rangeBand())
-        .attr("width" , function (d) {return that.x(d.sum)-3})
+        .attr("width" , function (d) {return that.x(d.sum)})
         .attr("y", function(d,i){ return that.y(d.word)})
         .attr("x", 3)
 
