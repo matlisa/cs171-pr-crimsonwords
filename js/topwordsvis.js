@@ -81,7 +81,7 @@ topWordsVis.prototype.updateVis = function(){
         return d.word}))
 
     this.x.domain([0, this.displayData[0].sum]);
-    
+
     this.yAxis.scale(this.y)
 
     this.xAxis.scale(this.x)
