@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>CRIMSON WORDS</title>
+    <!-- ADD Libraries-->
+    <script src="libs/d3/d3.min.js" charset="utf-8"></script>
+    <script src="libs/jquery/jquery-2.1.1.min.js" charset="utf-8"></script>
+    <script src="libs/bootstrap/js/bootstrap.min.js" charset="utf-8"></script>
+    <script src="http://d3js.org/queue.v1.min.js"></script>
+
+
+
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+    <script src="//code.jquery.com/jquery-1.10.2.js"></script>
+    <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+    <script src="http://labratrevenge.com/d3-tip/javascripts/d3.tip.v0.6.3.js"></script>
+
+
+
+    <!-- Bootstrap Core CSS -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+
+    <!-- Custom CSS -->
+    <link href="css/grayscale.css?ver=1" rel="stylesheet">
+
+    <!-- Custom Fonts -->
+    <link href="font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link href="http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic" rel="stylesheet" type="text/css">
+    <link href="http://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet" type="text/css">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+
+
+
+
+
+    <script src = "js/about.js?ver=2"></script>
+
+    <script src = "js/freqvis.js?ver=3"></script>
+    <script src = "js/relatevis.js?ver=2"></script>
+    <script src = "js/topwordsvis.js?ver=1"></script>
+    <!-- add own stylesheet-->
+    <link rel="stylesheet" type="text/css" href="css/myStyle.css?ver=5">
+
+</head>
+
+<body id="page-top" data-spy="scroll" data-target=".navbar-fixed-top">
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-custom navbar-fixed-top" role="navigation">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-main-collapse" >
+                    <i class="fa fa-bars"></i>
+                </button>
+                <a class="navbar-brand page-scroll" href="#page-top">
+                    <i class="fa fa-play-circle"></i>  <span class="light">Start</span> Visualization
+                </a>
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse navbar-right navbar-main-collapse">
+                <ul class="nav navbar-nav">
+                    <!-- Hidden li included to remove active class from about link when scrolled up past about section -->
+                    <li class="hidden">
+                        <a href="#page-top"></a>
+                    </li>
+                    <li>
+                        <a class="page-scroll" href="#about">About</a>
+                    </li>
+                    <li>
+                        <a class="page-scroll" href="#vis">Visualization</a>
+                    </li>
+                    <li>
+                        <a class="page-scroll" href="#contact">Contact</a>
+                    </li>
+                </ul>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container -->
+    </nav>
+
+    <!-- Intro Header -->
+    <header class="intro">
+        <div class="intro-body">
+            <div class = "row">
+                <div class="col-md-8 col-md-offset-2" id="aboutVis">
+                </div>
+            </div>
+                <h1 class="brand-heading">Words</h1>
+                <span id = "instructions">Complete the word. Double-clicking unfixes the nodes.</span><br>
+                <input class="btn btn-default" id="ready" type="submit" value="Ready?"/>
+                <p class="intro-text" style = "padding-top: 20px">A time-serialized visualization of word appearances in Harvard&#39;s student publication, The Crimson.</p>
+                <a href="#about" class="btn btn-circle page-scroll">
+                <i class="fa fa-angle-double-down animated"></i>
+                </a>
+        </div>
+    </header>
+
+    <!-- About Section -->
+    <section id="about" class="container content-section text-center">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2" >
+                <h2>About Crimson Words</h2>
+                <p>A dynamic data visualization of <em>The Crimson</em> articles over the span of the organization's history. Presented and created by Kim Soffen, Lisa Ma, and Jimmy Lin.</p>
+                <a href="#vis" class="btn btn-circle page-scroll">
+                <i class="fa fa-angle-double-down animated"></i>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Visualization Section -->
+    <section id="vis" class="container content-section text-center">
+        <p id = "abovevis"></p>
+        <br>
+        <div class="ui-widget">
+            <form onsubmit="return false" class="form-inline" id = "addword" >
+            <label for="tags">Enter Word: </label>
+            <input class="form-control" id="tags" name = "input" type="text" />
+            <input class="btn btn-default" id="submits" name="submit" type="submit" value="Add" onclick = "appear(); "/>
+            </form>
+        </div>
+        <br>
+
+        <div class="row">
+            <b>Current Time Interval: </b><span id="brushInfo"></span>
+            <b>Current Words:</b> 
+            <span class = "word" id="word1"></span>
+            <span class = "word" id="word2"></span>
+            <span class = "word" id="word3"></span>
+        </div>
+        <br>
+        <div class="row">
+            <div class="col-md-9" id="freqVis">
+                <b>Frequency of Words over Time</b> 
+            </div>
+            <div class="col-md-3" id="topWordsVis">
+                <b>Top 10 Words of Selected Period</b>
+            </div>
+        </div>
+        <br>
+
+        <div class="row" >
+        <p id = "percent"></p>
+            <div class="col-md-12" id="relateVis">
+                <b>Percent Change over Time</b><span id="changeInfo"></span>
+            </div>
+        </div>
+        <br>
+        <p id = "percentguide">Click anywhere on the graph to start the animation!</p>
+
+        <div class="row" >
+        <p id = "association"></p>
+            <div>
+                <strong>Force Layout: </strong>
+                <label><input type="radio" name="map" value="on" checked = "checked" id = "force">On</label>
+                <label><input type="radio" name="map" value="reset">Reset</label>
+            </div>
+            <div>
+                <strong>Time Update:</strong>
+                <label id = "min_time">2000</label><input type="range" name="years" min="0" max="10" step="5" value="0" id="slider-time" oninput=";"><label id = "max_time">2010</label>
+            </div>
+            <div>
+                <strong>Link Distance: </strong>
+                <label><input type="radio" name="dist" value="not_weighted" checked = "checked" id = "not_weighted">Not Weighted</label>
+                <label><input type="radio" name="dist" value="weighted" id = "weighted">Weighted by Association</label>
+            </div>
+            <div class="col-md-12" id="relateVis">
+                <b>Word Relations</b>
+            </div>
+            
+        </div>
+
+     </section>
+<script>
+        $(function(){
+            document.getElementById("vis").style.visibility = "hidden";
+            document.getElementById("addword").style.visibility = "visible";
+            document.getElementById("instructions").style.visibility = "hidden";
+            d3.select("#ready").on("mouseover", function() {
+
+                d3.select("#instructions").style("visibility","visible");
+            })
+            d3.select("#ready").on("mouseout", function() {
+
+                d3.select("#instructions").style("visibility","hidden");
+            })
+
+            var allData = [];
+            var _allData = [];
+            var metaData = {};
+            var allWords = [];
+            var connectData = [];
+
+            var freq_vis;
+            var change_vis;
+            var relate_vis;
+            var about_vis;
+            var relate_vis;
+
+            dateFormatter = d3.time.format("%Y-%m-%d %H:%M:%S");
+            dateFormat = d3.time.format("%Y");
+
+            var initVis = function(){
+
+                $('#aboutVis').html('');
+                $('#freqVis').html('');
+                $('#relateVis').html('');
+                $('#topWordsVis').html('');
+                $('#changeVis').html('');
+
+                var MyEventHandler = new Object();
+                var MyEventHandler2 = new Object();
+
+                about_vis = new AboutVis(d3.select("#aboutVis"), allData, metaData, allWords, MyEventHandler);
+
+                freq_vis = new FreqVis(d3.select("#freqVis"), allData, metaData, MyEventHandler, MyEventHandler2);
+
+                // initialize graph
+                if (freq_vis.currentWord) {
+                    var div = document.getElementById('word1');
+                    div.innerHTML = freq_vis.currentWord;
+                }
+
+                change_vis = new ChangeVis(d3.select("#changeVis"), allData, metaData, MyEventHandler);
+
+                relate_vis = new PrioVis(d3.select("#relateVis"), allData, metaData, MyEventHandler);
+
+                var topwords_vis = new topWordsVis(d3.select("#topWordsVis"), allData, metaData, MyEventHandler2);
+
+                $(MyEventHandler).bind("selectionChanged", function(event, data1){
+                    relate_vis.onSelectionChange(data1)
+                })
+
+                $(MyEventHandler2).bind("brushChanged", function(event, d, e){
+                    topwords_vis.onBrushChange(d, e);
+                })
+
+            }
+
+            // call this function after both files are loaded -- error should be "null" if no error
+            var dataLoaded = function (_allData) {
+                
+                allData = _allData.map(function(d) { 
+                            var res=d3.range(0,315).map(function(e,i) {
+                                
+                                return {count:0, link:"" };});
+                            d.count.map(function(dd, i) {
+                                var index=parseInt(dd.web_publish_date.substring(0, 4))-1882;
+                                index = d3.max([index, 0]);
+                                index = d3.min([index, 131]);
+                                // console.log(index)
+                                res[index].count += 1;
+                                
+                            })
+                            var key = {
+                                inform: res,
+                                word: d.word
+                            }
+
+                            return key;
+                });
+
+                allData.sort(function(a,b){
+                    if (a.word > b.word){return 1}
+                    else{return -1}
+                });
+
+                connectData = connectiondata(allData);
+                initVis();
+                
+            }
+
+            var startHere = function(){
+                
+                d3.select("#fitInBtn").on("click", function() {
+                });
+
+                d3.csv("data/topwords.csv", function(error, data) {                   
+
+                    allWords = data.map(function(d) {
+                        return d.word;
+                    });
+
+                    $( "#tags" ).autocomplete({
+                      source: allWords
+                    });
+
+                    dataLoaded([],[]);
+                });
+
+            }
+
+            var addgraph = function(word) {
+                if (!word) {
+                    word = document.getElementById('tags').value;
+                }
+                if (freq_vis.currentWord.indexOf(word) == -1) {
+                    freq_vis.currentWord.push(word);
+                    freq_vis.wrangleData();
+                    var extent = freq_vis.brush.extent();
+                    if (extent[0] != extent[1]) {
+                    freq_vis.displayData = filterdates(freq_vis.displayData, d3.round(extent[0]), d3.round(extent[1]));
+                    }
+                    if (!document.getElementById('word1').innerHTML) {
+                        var div = document.getElementById('word1');
+                        div.innerHTML = word;
+                    }
+                    else if (!document.getElementById('word2').innerHTML) {
+                        var div = document.getElementById('word2');
+                        div.innerHTML = word;
+                    }
+                    else if (!document.getElementById('word3').innerHTML) {
+                        var div = document.getElementById('word3');
+                        div.innerHTML = word;
+                    }
+                    else if (!document.getElementById('word4').innerHTML) {
+                        var div = document.getElementById('word4');
+                        div.innerHTML = word;
+                    }
+                /*var div1 = document.getElementById('word1');
+                var div2 = document.getElementById('word2');
+                var div3 = document.getElementById('word3');
+                if (freq_vis.currentWord[0]) {
+                    console.log("word1", freq_vis.currentWord[0])
+                    div1.innerHTML = freq_vis.currentWord[0];
+                }
+                else {
+                    div1.innerHTML = "";
+                    div2.innerHTML = "";
+                    div3.innerHTML = "";
+                }
+                if (freq_vis.currentWord[1]) {
+                    console.log("word2",freq_vis.currentWord[1] )
+                    div2.innerHTML = freq_vis.currentWord[1];
+                }
+                else {
+                    div2.innerHTML = "";
+                    div3.innerHTML = "";
+                }
+                if (freq_vis.currentWord[2]) {
+                    
+                    div3.innerHTML = freq_vis.currentWord[2];
+                }
+                else {
+                    div3.innerHTML = "";
+                }*/
+                
+                    freq_vis.updateVis(freq_vis.displayData, freq_vis.brush.extent());
+                   
+                    // need to condense the following
+                    
+                    /*console.log("addgraph", document.getElementById('word1'), document.getElementById('word2'),document.getElementById('word3'),d3.selectAll(".focus .line"), freq_vis.currentWord)*/
+                
+                }
+                document.getElementById('tags').value = "";
+
+            var deletegraph = function(object) {
+                    var todelete = $('#'+object.id).html();
+                    _allData = _allData.filter(function(v) {return v.word != todelete;});
+                    allData = _allData.filter(function(v) {return v.word != todelete;});
+
+                    var index = freq_vis.currentWord.indexOf(object.innerHTML);
+                    console.log(index)
+                    if (index > -1) {
+                        freq_vis.currentWord.splice(index, 1);
+                    }
+                    var div1 = document.getElementById('word1');
+                    var div2 = document.getElementById('word2');
+                    var div3 = document.getElementById('word3');
+                    var div4 = document.getElementById('word4');
+
+                    
+                    freq_vis.wrangleData();
+                    var extent = freq_vis.brush.extent();
+                    if (extent[0] != extent[1]) {
+                        freq_vis.displayData = filterdates(freq_vis.displayData, d3.round(extent[0]), d3.round(extent[1]));
+                    }
+
+                    if (freq_vis.currentWord[0]) {
+                        console.log("word1", freq_vis.currentWord[0])
+                        div1.innerHTML = freq_vis.currentWord[0];
+                    }
+                    else {
+                        div1.innerHTML = "";
+                        div2.innerHTML = "";
+                        div3.innerHTML = "";
+                    }
+                    if (freq_vis.currentWord[1]) {
+                        console.log("word2",freq_vis.currentWord[1] )
+                        div2.innerHTML = freq_vis.currentWord[1];
+                    }
+                    else {
+                        div2.innerHTML = "";
+                        div3.innerHTML = "";
+                    }
+                    if (freq_vis.currentWord[2]) {
+                        
+                        div3.innerHTML = freq_vis.currentWord[2];
+                    }
+                    else {
+                        div3.innerHTML = "";
+                    }
+                    
+                    freq_vis.updateVis(freq_vis.displayData, freq_vis.brush.extent());
+                   
+                    //object.innerHTML = "";
+            }
+
+            var changeimg = function() {
+                    var allnodes = d3.selectAll(".node.fixed");
+
+                    if (allnodes[0].length == 9) {
+                        $(".intro").stop().animate({opacity: 0},300,function(){
+                            $(this).css({'background': "url(http://matlisa.github.io/cs171-pr-crimsonwords/img/background6.png) no-repeat bottom center scroll"})
+                                       .animate({opacity: 1},{duration:1300});
+                         });
+
+                        about_vis.node.remove();
+                        about_vis.link.remove();
+
+                        document.getElementById("ready").style.visibility = "hidden";
+                        
+                    }
+                    else {document.getElementById("ready").value = "Try Again"}
+            }
+
+            var connectiondata = function() {
+                connections = [];
+                for (var i = 0, n = _allData.length; i<n; i++)
+                {
+                    dates1 = [];
+                    for (var k =0, p=_allData[i]['count'].length; k<p; k++)
+                    {
+                        dates1.push(_allData[i]['count'][k]['web_publish_date']);
+                    }
+                    dates1 = dates1.filter(function(x) {
+                        return ['2000','2005','2010'].indexOf(x.slice(0,4)) != -1;
+                    });
+
+                    newconnection = {};
+                    newconnection['word'] = _allData[i]['word'];
+                    newconnection['years'] = [{'year': '2000', 'top_partners': []}, {'year': '2005', 'top_partners': []}, {'year': '2010', 'top_partners': []}];
+
+                    for (var j = 0; j<n; j++)
+                    {
+                        if (i != j)
+                        {
+                            dates2 = [];
+                            for (var k =0, q=_allData[j]['count'].length; k<q; k++)
+                            {
+                                dates2.push(_allData[j]['count'][k]['web_publish_date']);
+                            }
+                            dates2 = dates2.filter(function(x) {
+                                return ['2000','2005','2010'].indexOf(x.slice(0,4)) != -1;
+                            });
+                            
+                            for (var k = 0; k<3; k++)
+                            {
+                                //these should already be in order of year.
+                                yrs=['2000','2005','2010']
+                                common = dates1.filter(function(x) {
+                                    return dates2.indexOf(x) != -1 && x.slice(0,4) == yrs[k];
+                                });
+
+                                newconnection['years'][k]['top_partners'].push({'word': _allData[j]['word'], 'total_connections': common.length});
+
+                            }
+                        }
+
+                    }
+                    console.log(newconnection);
+                    connections.push(newconnection);
+                }
+
+                console.log(JSON.stringify(connections));
+                return connections;
+            }
+
+            startHere();
+            
+            $("#ready").on("click", function() {
+                changeimg();
+            });
+
+            $("form").submit(function (e) {
+                var word = document.getElementById('tags').value;
+                if (freq_vis.currentWord.length < 3 
+                    && allWords.indexOf(word) > -1
+                    && freq_vis.currentWord.indexOf(word) == -1) {
+                    $(function () 
+                          {
+                            $.ajax({                                      
+                              url: 'query.php',                         
+                              data: "word="+word,                        
+                              dataType: 'json',                  
+                              success: function(data)          
+                              {
+                                _allData.push(JSON.parse(data));
+                                dataLoaded(_allData);
+                                for (var j = 0,n=_allData.length; j<n;j++)
+                                {
+                                    addgraph(_allData[j]['word']);
+                                }
+                                //addgraph(word);
+                              } 
+                            });
+                          }); 
+
+                    
+                }
+                else if (freq_vis.currentWord.length >= 3 ) {
+                    alert("Maximum number of words displayed. Please remove one of your selections by clicking on the word.")
+                }
+            });
+
+            d3.selectAll(".word").on("click", function() {
+                deletegraph(this);
+            })
+            d3.selectAll(".word").on("mouseover", function(p) {
+                var selected = this.innerHTML;
+                //console.log(selected, "selected")
+                d3.selectAll(".focus .line")
+                  .style("opacity", 0.35)
+                  .filter(function(d) { 
+                        console.log(this.id, selected)
+                        return this.id==selected;
+                  })
+                  .style("opacity", 1)
+                  .style("stroke", "#F0C808")
+                  .style("stroke-width", 2.5);
+                d3.select(this)
+                  .style("color", "#F0C808")
+             
+            })
+            d3.selectAll('.word').on("mouseout", function() {
+                d3.selectAll(".focus .line")
+                  .style("opacity", 1)
+                  .style("stroke", null)
+                  .style("stroke-width", null);
+                d3.select(this)
+                  .style("color", null)
+            })
+        })
+    
+    var getInnerWidth = function(element) {
+        var style = window.getComputedStyle(element.node(), null);
+
+        return parseInt(style.getPropertyValue('width'));
+    }
+    var filterdates = function(data, from, to) {
+        var filtered = [];
+        var newdata = [];
+        data.forEach(function(d, j){
+            filtered[j] = d.inform.filter(function(dd, i) {
+                return ((i+1882) >= from && (i+1882) <= to); })
+            
+            newdata[j] = {"word": d.word, "inform": filtered[j]}
+        });
+        return newdata;
+    }
+
+    var mousemove = function(object, countvis, word) {      
+
+                       
+        if (object) {
+            var y0;
+            var x0 = d3.round(countvis.x.invert(d3.mouse(object)[0]))
+
+            var found = countvis.originalData.filter(function(d, i) {
+                
+                return d.word == countvis.selectword;
+
+            })
+
+            if (found[0]) {
+                y0 = found[0].inform[x0-1700].count
+            }
+            else {
+                y0 = countvis.originalData[0].inform[x0-1700].count
+            }
+
+            countvis.back.select("circle.y")                           
+                .attr("transform",
+                      "translate(" + (countvis.x(x0)) +"," +      
+                                     countvis.y(y0) + ")");
+            countvis.back.select(".tool")
+                .attr("transform",
+                        "translate(" + (countvis.x(x0)) +"," + 
+                                     "0)");
+            countvis.back.select("text.y4")
+                .attr("transform",
+                      "translate(" + (countvis.x(x0)) +"," + 
+                                     countvis.y(y0) + ")")
+                .text("Year: " + x0 + ",\n Count: " +y0);
+
+            countvis.back.select("rect.y3")
+                .attr("x", countvis.x(x0)-20)
+                .attr("y", countvis.y(y0)-35) 
+
+        }   
+    }   
+       
+    var appear = function() {
+        document.getElementById("vis").style.visibility = "visible";
+        window.location.href = "#abovevis";
+    }
+
+    </script>
+
+
+
+
+
+    <!-- Contact Section -->
+    <section id="contact" class="content-section text-center">
+        <div class="download-section">
+            <div class="container">
+                <div class="col-lg-8 col-lg-offset-2">
+                    <h2>Contact Us</h2>
+                    <p>Feel free to email us to provide some feedback on our visualizations, or to just say hello!</p>
+                    <p><a href="mailto:feedback@startbootstrap.com">feedback@startbootstrap.com</a>
+                    </p>
+                    <ul class="list-inline banner-social-buttons">
+                        <li>
+                            <a href="https://twitter.com/SBootstrap" class="btn btn-default btn-lg"><i class="fa fa-twitter fa-fw"></i> <span class="network-name">Twitter</span></a>
+                        </li>
+                        <li>
+                            <a href="https://github.com/IronSummitMedia/startbootstrap" class="btn btn-default btn-lg"><i class="fa fa-github fa-fw"></i> <span class="network-name">Github</span></a>
+                        </li>
+                        <li>
+                            <a href="https://plus.google.com/+Startbootstrap/posts" class="btn btn-default btn-lg"><i class="fa fa-google-plus fa-fw"></i> <span class="network-name">Google+</span></a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container text-center">
+            <p>Copyright &copy; Crimson Words 2015</p>
+        </div>
+    </footer>
+
+
+    <!-- Plugin JavaScript -->
+    <script src="js/jquery.easing.min.js"></script>
+
+    <!-- Google Maps API Key - Use your own API key to enable the map feature. More information on the Google Maps API can be found at https://developers.google.com/maps/ -->
+    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCRngKslUGJTlibkQ3FkfTxj3Xss1UlZDA&sensor=false"></script>
+
+    <!-- Custom Theme JavaScript -->
+    <script src="js/grayscale.js"></script>
+
+</body>
+
+</html>

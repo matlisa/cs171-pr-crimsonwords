@@ -39,7 +39,7 @@ topWordsVis.prototype.initVis = function(){
       .rangeRoundBands([0, this.height],.1)
 
     this.x = d3.scale.linear()
-      .range([0, this.width])
+      .range([0, this.width-150])
 
     this.yAxis = d3.svg.axis()
       .ticks(6)
@@ -48,7 +48,7 @@ topWordsVis.prototype.initVis = function(){
 
     this.xAxis = d3.svg.axis()
       .scale(this.x)
-      .ticks(4)
+      .ticks(2)
       .orient("bottom");
 
 
@@ -57,7 +57,7 @@ topWordsVis.prototype.initVis = function(){
 
     this.svg.append("g")
         .attr("class", "y axis")
-        .attr("transform", "translate(60, 0)")
+        .attr("transform", "translate(150, 0)")
 
     this.updateVis();
 }
@@ -96,7 +96,7 @@ topWordsVis.prototype.updateVis = function(){
         .attr("dy", ".15em")
 
     this.svg.select(".x.axis")
-        .attr("transform", "translate(60,"+ (this.height+ 10)+")")
+        .attr("transform", "translate(150,"+ (this.height+ 10)+")")
         .call(this.xAxis)
 
     this.svg.select(".y.axis")
@@ -108,12 +108,12 @@ topWordsVis.prototype.updateVis = function(){
     
     this.rows.enter().append("rect")
         .attr("class", "row")
-        .attr("transform", "translate(60,0)")
+        .attr("transform", "translate(150,0)")
     
 
     this.rows
-      	.attr("fill", "#CDEDF6") 
-      	.attr("height" , this.y.rangeBand())
+        .attr("fill", "#CDEDF6") 
+        .attr("height" , this.y.rangeBand())
         .attr("width" , function (d) {return that.x(d.sum)})
         .attr("y", function(d,i){ return that.y(d.word)})
         .attr("x", 3)
@@ -123,11 +123,13 @@ topWordsVis.prototype.updateVis = function(){
 }
 
 topWordsVis.prototype.onBrushChange= function (selectionStart, selectionEnd){
-
+    if (selectionStart && selectionEnd){
     var filter = function (d,i){
         return i>=(d3.round(selectionStart)-1882) && i<=(d3.round(selectionEnd)-1882)
-    };
-var test = d3.range(132).map(function(d, i){return i})
+    };}
+    else{
+        filter =null
+    }
 
     this.wrangleData(filter);
 
@@ -148,8 +150,9 @@ topWordsVis.prototype.filterAndAggregate = function(_filter){
     var res = d3.range(this.data.length).map(function () {
         return {word:"", sum:0};
     });
-
+    
     this.data.map(function(d,i){
+        
         res[i] = {word: d["word"], sum: d3.sum(d["inform"].filter(filter).map(function(dd){return dd.count}))}
         })
 
@@ -158,4 +161,3 @@ topWordsVis.prototype.filterAndAggregate = function(_filter){
     return res.filter(function(d,i){return i<10});
 
 }
-

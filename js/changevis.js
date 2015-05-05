@@ -77,7 +77,7 @@ ChangeVis.prototype.initVis = function(){
             .style("fill", "none")
 
         .transition()
-            .duration(2000)
+            .duration(5000)
             .delay(function(d, i) { return i * 10; })
             .ease(Math.sqrt)
             .each(slide);

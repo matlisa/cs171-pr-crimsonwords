@@ -319,14 +319,14 @@ FreqVis.prototype.updateVis = function(newdata, extent){
             .style("opacity", 1)
             .style("color", "#F0C808");
 
-          /*d3.selectAll(".focus .line")
+          d3.selectAll(".focus .line")
             .style("opacity", 0.35)
             .filter(function(p) { 
               return this.id == selected;
             })
             .style("opacity", 1)
             .style("stroke", "#F0C808")
-            .style("stroke-width", 2.5);*/
+            .style("stroke-width", 2.5);
 
       })
       .on("mouseout", function(d,i) {
