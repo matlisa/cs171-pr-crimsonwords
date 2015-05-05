@@ -368,6 +368,56 @@ FreqVis.prototype.updateVis = function(newdata, extent){
       .selectAll("rect")
         .attr("height", this.height2);
 
+
+  d3.selectAll(".focus .line").transition()
+      .duration(30000)
+      .each("end", function() { d3.select(this).attr("clip-path", null); });
+
+
+/*function stackedArea() {
+    that.y= d3.scale.ordinal()
+      .rangeRoundBands([0, that.height],.1)
+
+    that.x = d3.scale.linear()
+      .range([0, that.width])
+
+      that.y.domain(that.displayData.map(function(d,i){
+        return d.word}))
+
+    that.x.domain([0, 250]);
+  that.svg.select(".y.axis")
+        .call(this.yAxis)
+        .selectAll("text")
+        .style("text-anchor", "end")
+        .attr("dx", "-.8em")
+        .attr("dy", ".15em")
+
+    that.rows = that.svg
+                    .selectAll(".row")
+                    .data(that.displayData)
+    
+    that.rows.enter().append("rect")
+        .attr("class", "row")
+        .attr("transform", "translate(60,0)")
+    
+
+    that.rows
+        .attr("fill", "#CDEDF6") 
+        .attr("height" , that.y.rangeBand())
+        .attr("width" , function (d) {return that.x(d.sum)-3})
+        .attr("y", function(d,i){ return that.y(d.word)})
+        .attr("x", 3)
+
+    that.rows.exit().remove()
+
+}
+
+  setTimeout(stackedArea,3500);
+
+  setTimeout(function() {
+    that.svg.selectAll("*").remove();
+  }, 3000);*/
+
 }
 
 FreqVis.prototype.onSelectionChange= function (selectionStart, selectionEnd){

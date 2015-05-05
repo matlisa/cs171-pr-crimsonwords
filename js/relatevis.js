@@ -631,11 +631,11 @@ RelateVis.prototype.reset = function(data, all_data, trial_links) {
         })
         .style("stroke", function(d) {
           if (d.word == that.word_selected) {
-            return "white";} 
+            return "red";} 
         })
         .style("stroke-width", function(d) {
           if (d.word == that.word_selected) {
-            return 1;} 
+            return 0;} 
         })
         .on("mouseover", this.tip.show)        
         .on("mouseout", this.tip.hide)
@@ -655,6 +655,7 @@ RelateVis.prototype.reset = function(data, all_data, trial_links) {
 
       this.force
         .nodes(all_data.nodes)
+        .links(empty)
 
       this.force_layout_all();
 }
