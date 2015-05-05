@@ -72,7 +72,7 @@ topWordsVis.prototype.updateVis = function(){
     
     var len=this.displayData.length
     var space =""
-    for (var i =0; i < 10-len; i++){
+    for (var i =0; i < 6-len; i++){
         var space = space +" "
         this.displayData.push({sum:0, word:space})
     }
